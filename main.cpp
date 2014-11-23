@@ -8,6 +8,7 @@ BITMAP* gunman;
 BITMAP* background;
 BITMAP* cursor;
 BITMAP* bullet_image;
+BITMAP* helicopter;
 
 bool close_button_pressed;
 
@@ -22,6 +23,8 @@ int old_time;
 
 int player_x;
 int player_y=550;
+int helicopter_x;
+int helicopter_y=30;
 
 int bullet_delay;
 
@@ -93,10 +96,13 @@ void update(){
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
 
+    helicopter_x+=5;
+    if(helicopter_x>800)helicopter_x=-200;
+
     angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
 
     bullet_delay++;
-    if(key[KEY_SPACE] && bullet_delay>9 || mouse_b & 1 && bullet_delay>9 ){
+    if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
         create_bullet=true;
         bullet_delay=0;
     }
@@ -121,12 +127,12 @@ void update(){
 
 
 
-
 }
 
 void draw(){
     draw_sprite(buffer,background,0,0);
     draw_sprite(buffer,gunman,player_x,player_y);
+    draw_sprite(buffer,helicopter,helicopter_x,helicopter_y);
 
     for(int i=0; i<100; i++){
         if(bullets[i].on_screen){
@@ -177,6 +183,9 @@ void setup(){
 
      if (!(bullet_image = load_bitmap("bullet_image.png", NULL)))
       abort_on_error("Cannot find image bullet_image.png\nPlease check your files and try again");
+
+    if (!(helicopter = load_bitmap("helicopter.png", NULL)))
+      abort_on_error("Cannot find image helicopter.png\nPlease check your files and try again");
 }
 
 
