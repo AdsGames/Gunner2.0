@@ -6,6 +6,7 @@
 BITMAP* buffer;
 BITMAP* gunman;
 BITMAP* background;
+BITMAP* cursor;
 
 bool close_button_pressed;
 
@@ -22,6 +23,8 @@ int player_x;
 int player_y=550;
 
 int bullet_delay;
+
+float angle_radians;
 
 bool create_bullet;
 
@@ -89,6 +92,8 @@ void update(){
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
 
+    angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
+
     bullet_delay++;
     if(key[KEY_SPACE] && bullet_delay>9 || mouse_b & 1 && bullet_delay>9 ){
         create_bullet=true;
@@ -105,10 +110,10 @@ void update(){
         }else if(create_bullet==true){
             bullets[i].on_screen=true;
             create_bullet=false;
-            bullets[i].x=player_x;
-            bullets[i].y=player_y;
-            bullets[i].vector_x=-2*cos(0.5);
-            bullets[i].vector_y=-2*sin(0.5);
+            bullets[i].x=player_x+15;
+            bullets[i].y=player_y+20;
+            bullets[i].vector_x=-2*cos(angle_radians);
+            bullets[i].vector_y=-2*sin(angle_radians);
         }
     }
 
@@ -128,6 +133,7 @@ void draw(){
         }
     }
 
+    draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
     draw_sprite(screen,buffer,0,0);
 
 
@@ -163,6 +169,9 @@ void setup(){
 
     if (!(background = load_bitmap("background.png", NULL)))
       abort_on_error("Cannot find image background.png\nPlease check your files and try again");
+
+    if (!(cursor = load_bitmap("cursor.png", NULL)))
+      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
 }
 
 
