@@ -1,8 +1,11 @@
 #include<allegro.h>
 #include<alpng.h>
 #include<time.h>
+#include<cmath>
 
 BITMAP* buffer;
+BITMAP* gunman;
+BITMAP* background;
 
 bool close_button_pressed;
 
@@ -14,6 +17,20 @@ volatile int game_time = 0;
 int fps;
 int frames_done;
 int old_time;
+
+int player_x;
+int player_y=550;
+
+struct bullet{
+    float x;
+    float y;
+    float vector_x;
+    float vector_y;
+    bool on_screen=false;
+}bullets[100];
+
+
+
 
 void ticker(){
   ticks++;
@@ -51,14 +68,21 @@ void abort_on_error(const char *message){
 }
 
 void update(){
+    if(key[KEY_LEFT] || key[KEY_A])player_x-=5;
+    if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
+
+
+
 
 
 
 }
 
 void draw(){
-
+    draw_sprite(buffer,background,0,0);
+    draw_sprite(buffer,gunman,player_x,player_y);
     draw_sprite(screen,buffer,0,0);
+
 }
 
 
@@ -68,7 +92,7 @@ void draw(){
 
 
 void setup(){
-    buffer=create_bitmap(1024,768);
+    buffer=create_bitmap(800,600);
 
 
     srand(time(NULL));
@@ -86,8 +110,11 @@ void setup(){
     LOCK_FUNCTION(close_button_handler);
     set_close_button_callback(close_button_handler);
 
-   // if (!(bmp = load_bitmap("bmp.png", NULL)))
-   //   abort_on_error("Cannot find image bmp.png\nPlease check your files and try again");
+    if (!(gunman = load_bitmap("gunman.png", NULL)))
+      abort_on_error("Cannot find image gunman.png\nPlease check your files and try again");
+
+    if (!(background = load_bitmap("background.png", NULL)))
+      abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 }
 
 
@@ -110,7 +137,7 @@ int main(){
 
 
 
-  set_window_title("Sci-Fi game!");
+  set_window_title("Gunner 2.0");
   setup();
 
 
