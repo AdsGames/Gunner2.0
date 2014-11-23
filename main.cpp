@@ -7,6 +7,7 @@ BITMAP* buffer;
 BITMAP* gunman;
 BITMAP* background;
 BITMAP* cursor;
+BITMAP* bullet_image;
 
 bool close_button_pressed;
 
@@ -112,8 +113,8 @@ void update(){
             create_bullet=false;
             bullets[i].x=player_x+15;
             bullets[i].y=player_y+20;
-            bullets[i].vector_x=-2*cos(angle_radians);
-            bullets[i].vector_y=-2*sin(angle_radians);
+            bullets[i].vector_x=-10*cos(angle_radians);
+            bullets[i].vector_y=-10*sin(angle_radians);
         }
     }
 
@@ -130,6 +131,7 @@ void draw(){
     for(int i=0; i<100; i++){
         if(bullets[i].on_screen){
             putpixel(buffer,bullets[i].x,bullets[i].y,makecol(0,0,0));
+            draw_sprite(buffer,bullet_image,bullets[i].x,bullets[i].y);
         }
     }
 
@@ -171,7 +173,10 @@ void setup(){
       abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 
     if (!(cursor = load_bitmap("cursor.png", NULL)))
-      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
+      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");\
+
+     if (!(bullet_image = load_bitmap("bullet_image.png", NULL)))
+      abort_on_error("Cannot find image bullet_image.png\nPlease check your files and try again");
 }
 
 
