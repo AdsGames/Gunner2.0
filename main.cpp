@@ -66,7 +66,14 @@ int random(int newLowest, int newHighest)
   int randomNumber = lowest+int(range*rand()/(RAND_MAX + 1.0));
   return randomNumber;
 }
-
+//Collision between 2 boxes
+bool collision(float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, float yMax1, float yMin2, float yMax2)
+{
+  if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1){
+    return true;
+  }
+  return false;
+}
 
 //A function to streamline error reporting in file loading
 void abort_on_error(const char *message){
@@ -108,6 +115,9 @@ void update(){
     }
 
     for(int i=0; i<100; i++){
+        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5)){
+            helicopter_x=-200;
+        }
         if(bullets[i].on_screen){
            bullets[i].x+=bullets[i].vector_x;
            bullets[i].y+=bullets[i].vector_y;
