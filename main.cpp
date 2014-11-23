@@ -21,6 +21,10 @@ int old_time;
 int player_x;
 int player_y=550;
 
+int bullet_delay;
+
+bool create_bullet;
+
 struct bullet{
     float x;
     float y;
@@ -67,10 +71,46 @@ void abort_on_error(const char *message){
 	 exit(-1);
 }
 
+//Finds angle of point 2 relative to point 1
+float find_angle(int x_1, int y_1, int x_2, int y_2){
+    float tan_1;
+    float tan_2;
+    if(x_1-x_2!=0 && y_1-y_2!=0){
+        tan_1=y_1-y_2;
+        tan_2=x_1-x_2;
+    }
+
+    return atan2(tan_1,tan_2);
+}
+
+
 void update(){
     if(key[KEY_LEFT] || key[KEY_A])player_x-=5;
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
+
+    bullet_delay++;
+    if(key[KEY_SPACE] && bullet_delay>9 || mouse_b & 1 && bullet_delay>9 ){
+        create_bullet=true;
+        bullet_delay=0;
+    }
+
+    for(int i=0; i<100; i++){
+        if(bullets[i].on_screen){
+           bullets[i].x+=bullets[i].vector_x;
+           bullets[i].y+=bullets[i].vector_y;
+
+
+           if(bullets[i].x>800 || bullets[i].y>600 || bullets[i].x<0 || bullets[i].y<0)bullets[i].on_screen=false;
+        }else if(create_bullet==true){
+            bullets[i].on_screen=true;
+            create_bullet=false;
+            bullets[i].x=player_x;
+            bullets[i].y=player_y;
+            bullets[i].vector_x=-2*cos(0.5);
+            bullets[i].vector_y=-2*sin(0.5);
+        }
+    }
 
 
 
@@ -81,7 +121,15 @@ void update(){
 void draw(){
     draw_sprite(buffer,background,0,0);
     draw_sprite(buffer,gunman,player_x,player_y);
+
+    for(int i=0; i<100; i++){
+        if(bullets[i].on_screen){
+            putpixel(buffer,bullets[i].x,bullets[i].y,makecol(0,0,0));
+        }
+    }
+
     draw_sprite(screen,buffer,0,0);
+
 
 }
 
