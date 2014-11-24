@@ -3,6 +3,9 @@
 #include<time.h>
 #include<cmath>
 
+#define PLAYER TRUE
+#define HELICOPTER FALSE
+
 BITMAP* buffer;
 BITMAP* gunman;
 BITMAP* background;
@@ -36,6 +39,7 @@ int helicopter_firing_rate=10;
 int bullet_delay;
 
 float mouse_angle_radians;
+float helicopter_angle_radians;
 
 struct bullet{
     float x;
@@ -136,13 +140,16 @@ void update(){
         helicopter_health=100;
     }
     mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
+    helicopter_angle_radians=find_angle(helicopter_x+100,helicopter_y+30,player_x+15,player_y+20);
 
     bullet_delay++;
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
-        create_bullet(player_x+15,player_y+20,true,mouse_angle_radians,10);
+        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,10);
+        create_bullet(helicopter_x+100,helicopter_y+30,HELICOPTER,helicopter_angle_radians,20);
     }
     for(int i=0; i<100; i++){
-        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen){
+        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner==PLAYER){
+
             helicopter_health-=5;
             bullets[i].on_screen=false;
             helicopter_hurt_timer=3;
