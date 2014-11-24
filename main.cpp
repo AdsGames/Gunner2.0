@@ -23,8 +23,12 @@ int old_time;
 
 int player_x;
 int player_y=550;
+
 int helicopter_x;
 int helicopter_y=30;
+//Forward is true
+bool helicopter_direction=true;
+int helicopter_health=100;
 
 int bullet_delay;
 
@@ -103,9 +107,14 @@ void update(){
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
 
-    helicopter_x+=5;
-    if(helicopter_x>800)helicopter_x=-200;
-
+    if(helicopter_direction)helicopter_x+=5;
+    else helicopter_x-=5;
+    if(helicopter_x>650)helicopter_direction=false;
+    if(helicopter_x<0)helicopter_direction=true;
+    if(helicopter_health<1){
+        helicopter_x=-400;
+        helicopter_health=100;
+    }
     angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
 
     bullet_delay++;
@@ -115,8 +124,9 @@ void update(){
     }
 
     for(int i=0; i<100; i++){
-        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5)){
-            helicopter_x=-200;
+        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen){
+            helicopter_health-=5;
+            bullets[i].on_screen=false;
         }
         if(bullets[i].on_screen){
            bullets[i].x+=bullets[i].vector_x;
