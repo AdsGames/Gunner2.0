@@ -6,6 +6,10 @@
 #define PLAYER TRUE
 #define HELICOPTER FALSE
 
+#define LEFT 0
+#define RIGHT 1
+#define HOVER 2
+
 BITMAP* buffer;
 BITMAP* player;
 BITMAP* player_hurt;
@@ -35,11 +39,12 @@ int player_health=100;
 int helicopter_x;
 int helicopter_y=30;
 //Forward is true
-bool helicopter_direction=true;
+int helicopter_direction=LEFT;
 int helicopter_hurt_timer;
 int helicopter_health=100;
 int helicopter_fire_rate=10;
 int helicopter_fire_timer;
+int helicopter_movement_timer;
 
 int bullet_delay;
 
@@ -142,12 +147,32 @@ void update(){
     helicopter_hurt_timer--;
     player_hurt_timer--;
 
-    if(helicopter_direction)helicopter_x+=5;
-    else helicopter_x-=5;
-    if(helicopter_x>650)helicopter_direction=false;
-    if(helicopter_x<0)helicopter_direction=true;
+    if(helicopter_direction==LEFT)helicopter_x-=5;
+    if(helicopter_direction==RIGHT)helicopter_x+=5;
+
+
+
+    if(helicopter_x>600){
+        helicopter_direction=HOVER;
+        helicopter_movement_timer++;
+        if(helicopter_movement_timer>120){
+            helicopter_direction=LEFT;
+            helicopter_movement_timer=0;
+        }
+    }
+    if(helicopter_x<0){
+        helicopter_direction=HOVER;
+        helicopter_movement_timer++;
+        if(helicopter_movement_timer>120){
+            helicopter_direction=RIGHT;
+            helicopter_movement_timer=0;
+        }
+    }
+
+
     if(helicopter_health<1){
-        helicopter_x=-400;
+        helicopter_x=100;
+        helicopter_direction=LEFT;
         helicopter_health=100;
     }
     mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
