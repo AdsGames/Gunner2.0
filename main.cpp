@@ -7,7 +7,8 @@
 #define HELICOPTER FALSE
 
 BITMAP* buffer;
-BITMAP* gunman;
+BITMAP* player;
+BITMAP* player_hurt;
 BITMAP* background;
 BITMAP* cursor;
 BITMAP* bullet_image;
@@ -28,6 +29,7 @@ int old_time;
 
 int player_x;
 int player_y=550;
+int player_hurt_timer;
 
 int helicopter_x;
 int helicopter_y=30;
@@ -132,6 +134,7 @@ void update(){
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
     helicopter_hurt_timer--;
+    player_hurt_timer--;
 
     if(helicopter_direction)helicopter_x+=5;
     else helicopter_x-=5;
@@ -161,6 +164,9 @@ void update(){
             bullets[i].on_screen=false;
             helicopter_hurt_timer=3;
         }
+        if(collision(player_x,player_x+20,bullets[i].x,bullets[i].x+5,player_y,player_y+20,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
+            player_hurt_timer=3;
+        }
         if(bullets[i].on_screen){
            bullets[i].x+=bullets[i].vector_x;
            bullets[i].y+=bullets[i].vector_y;
@@ -177,9 +183,11 @@ void update(){
 
 void draw(){
     draw_sprite(buffer,background,0,0);
-    draw_sprite(buffer,gunman,player_x,player_y);
     if(helicopter_hurt_timer<1)draw_sprite(buffer,helicopter,helicopter_x,helicopter_y);
     else draw_sprite(buffer,helicopter_hurt,helicopter_x,helicopter_y);
+
+    if(player_hurt_timer<1)draw_sprite(buffer,player,player_x,player_y);
+    else draw_sprite(buffer,player_hurt,player_x,player_y);
 
     for(int i=0; i<100; i++){
         if(bullets[i].on_screen){
@@ -219,8 +227,11 @@ void setup(){
     LOCK_FUNCTION(close_button_handler);
     set_close_button_callback(close_button_handler);
 
-    if (!(gunman = load_bitmap("gunman.png", NULL)))
-      abort_on_error("Cannot find image gunman.png\nPlease check your files and try again");
+    if (!(player = load_bitmap("player.png", NULL)))
+      abort_on_error("Cannot find image player.png\nPlease check your files and try again");
+
+    if (!(player_hurt = load_bitmap("player_hurt.png", NULL)))
+      abort_on_error("Cannot find image player_hurt.png\nPlease check your files and try again");
 
     if (!(background = load_bitmap("background.png", NULL)))
       abort_on_error("Cannot find image background.png\nPlease check your files and try again");
