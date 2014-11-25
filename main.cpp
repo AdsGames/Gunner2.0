@@ -30,6 +30,7 @@ int old_time;
 int player_x;
 int player_y=550;
 int player_hurt_timer;
+int player_health=100;
 
 int helicopter_x;
 int helicopter_y=30;
@@ -133,6 +134,11 @@ void update(){
     if(key[KEY_LEFT] || key[KEY_A])player_x-=5;
     if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
 
+    if(player_health<1){
+        player_x=-0;
+        player_health=100;
+    }
+
     helicopter_hurt_timer--;
     player_hurt_timer--;
 
@@ -164,8 +170,10 @@ void update(){
             bullets[i].on_screen=false;
             helicopter_hurt_timer=3;
         }
-        if(collision(player_x,player_x+20,bullets[i].x,bullets[i].x+5,player_y,player_y+20,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
+        if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
             player_hurt_timer=3;
+            bullets[i].on_screen=false;
+            player_health-=5;
         }
         if(bullets[i].on_screen){
            bullets[i].x+=bullets[i].vector_x;
@@ -188,6 +196,15 @@ void draw(){
 
     if(player_hurt_timer<1)draw_sprite(buffer,player,player_x,player_y);
     else draw_sprite(buffer,player_hurt,player_x,player_y);
+
+    rectfill(buffer,10,10,214,30,makecol(0,0,0));
+    rectfill(buffer,12,12,212,28,makecol(255,0,0));
+    rectfill(buffer,12,12,12+(helicopter_health*2),28,makecol(0,255,0));
+
+    rectfill(buffer,550,10,754,30,makecol(0,0,0));
+    rectfill(buffer,552,12,752,28,makecol(255,0,0));
+    rectfill(buffer,552,12,552+(player_health*2),28,makecol(0,255,0));
+
 
     for(int i=0; i<100; i++){
         if(bullets[i].on_screen){
@@ -239,11 +256,10 @@ void setup(){
     if (!(cursor = load_bitmap("cursor.png", NULL)))
       abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");\
 
-     if (!(bullet_image = load_bitmap("bullet_image.png", NULL)))
+    if (!(bullet_image = load_bitmap("bullet_image.png", NULL)))
       abort_on_error("Cannot find image bullet_image.png\nPlease check your files and try again");
 
-
-     if (!(helicopter_bullet_image = load_bitmap("helicopter_bullet_image.png", NULL)))
+    if (!(helicopter_bullet_image = load_bitmap("helicopter_bullet_image.png", NULL)))
       abort_on_error("Cannot find image helicopter_bullet_image.png\nPlease check your files and try again");
 
     if (!(helicopter = load_bitmap("helicopter.png", NULL)))
