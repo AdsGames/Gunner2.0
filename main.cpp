@@ -42,7 +42,7 @@ int helicopter_y=30;
 int helicopter_direction=LEFT;
 int helicopter_hurt_timer;
 int helicopter_health=100;
-int helicopter_fire_rate=10;
+int helicopter_fire_rate=20;
 int helicopter_fire_timer;
 int helicopter_movement_timer;
 
@@ -136,8 +136,8 @@ float find_angle(int x_1, int y_1, int x_2, int y_2){
 
 
 void update(){
-    if(key[KEY_LEFT] || key[KEY_A])player_x-=5;
-    if(key[KEY_RIGHT] || key[KEY_D])player_x+=5;
+    if((key[KEY_LEFT] || key[KEY_A]) && player_x>1)player_x-=5;
+    if((key[KEY_RIGHT] || key[KEY_D]) && player_x<750)player_x+=5;
 
     if(player_health<1){
         player_x=-0;
@@ -182,27 +182,27 @@ void update(){
 
     helicopter_fire_timer++;
     if(helicopter_fire_rate<helicopter_fire_timer){
-        create_bullet(helicopter_x+100,helicopter_y+30,HELICOPTER,helicopter_angle_radians,20);
+        create_bullet(helicopter_x+100,helicopter_y+30,HELICOPTER,helicopter_angle_radians,10);
         helicopter_fire_timer=0;
     }
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
-        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,10);
+        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,20);
     }
     for(int i=0; i<100; i++){
-        if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
 
-            helicopter_health-=5;
-            bullets[i].on_screen=false;
-            helicopter_hurt_timer=3;
-        }
-        if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
-            player_hurt_timer=3;
-            bullets[i].on_screen=false;
-            player_health-=5;
-        }
         if(bullets[i].on_screen){
            bullets[i].x+=bullets[i].vector_x;
            bullets[i].y+=bullets[i].vector_y;
+           if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
+                helicopter_health-=5;
+                bullets[i].on_screen=false;
+                helicopter_hurt_timer=3;
+            }
+            if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
+                player_hurt_timer=3;
+                bullets[i].on_screen=false;
+                player_health-=5;
+            }
 
 
            if(bullets[i].x>800 || bullets[i].y>600 || bullets[i].x<0 || bullets[i].y<0)bullets[i].on_screen=false;
