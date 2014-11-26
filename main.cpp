@@ -19,6 +19,7 @@ BITMAP* bullet_image;
 BITMAP* helicopter_bullet_image;
 BITMAP* helicopter;
 BITMAP* helicopter_hurt;
+BITMAP* box_machinegun;
 
 bool close_button_pressed;
 
@@ -59,6 +60,13 @@ struct bullet{
     bool on_screen=false;
     bool owner;
 }bullets[100];
+
+struct boxes{
+    int x;
+    int y;
+    int type;
+    bool on_screen=false;
+}box[10];
 
 
 
@@ -120,6 +128,20 @@ void create_bullet(int newX, int newY, bool newOwner, float newAngle, float newS
     }
     bullet_delay=0;
 }
+//Box factory
+void create_box(int newX, int newY, int newType){
+    bool box_made=false;
+    for(int i=0; i<100; i++){
+        if(!box[i].on_screen && !box_made){
+            box_made=true;
+            box[i].on_screen=true;
+            box[i].x=newX;
+            box[i].y=newY;
+            box[i].type=newType;
+        }
+    }
+    bullet_delay=0;
+}
 
 
 //Finds angle of point 2 relative to point 1
@@ -171,6 +193,7 @@ void update(){
 
 
     if(helicopter_health<1){
+        create_box(helicopter_x,helicopter_y,0);
         helicopter_x=100;
         helicopter_direction=LEFT;
         helicopter_health=100;
@@ -186,7 +209,7 @@ void update(){
         helicopter_fire_timer=0;
     }
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
-        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,20);
+        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,30);
     }
     for(int i=0; i<100; i++){
 
@@ -194,11 +217,11 @@ void update(){
            bullets[i].x+=bullets[i].vector_x;
            bullets[i].y+=bullets[i].vector_y;
            if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
-                helicopter_health-=5;
+                helicopter_health-=50;
                 bullets[i].on_screen=false;
                 helicopter_hurt_timer=3;
             }
-            if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && !bullets[i].owner){
+            if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && !bullets[i].owner){
                 player_hurt_timer=3;
                 bullets[i].on_screen=false;
                 player_health-=5;
@@ -206,6 +229,16 @@ void update(){
 
 
            if(bullets[i].x>800 || bullets[i].y>600 || bullets[i].x<0 || bullets[i].y<0)bullets[i].on_screen=false;
+        }
+    }
+    for(int i=0; i<10; i++){
+        if(box[i].on_screen){
+            if(box[i].y<550)box[i].y+=5;
+             if(collision(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
+                box[i].on_screen=false;
+             }
+
+
         }
     }
 
@@ -235,6 +268,12 @@ void draw(){
         if(bullets[i].on_screen){
 
             draw_sprite(buffer,bullet_image,bullets[i].x,bullets[i].y);
+        }
+    }
+    for(int i=0; i<10; i++){
+        if(box[i].on_screen){
+
+            if(box[i].type==0)draw_sprite(buffer,box_machinegun,box[i].x,box[i].y);
         }
     }
 
@@ -292,6 +331,9 @@ void setup(){
 
     if (!(helicopter_hurt = load_bitmap("helicopter_hurt.png", NULL)))
       abort_on_error("Cannot find image helicopter_hurt.png\nPlease check your files and try again");
+
+    if (!(box_machinegun = load_bitmap("box_machinegun.png", NULL)))
+      abort_on_error("Cannot find image box_machinegun.png\nPlease check your files and try again");
 }
 
 
