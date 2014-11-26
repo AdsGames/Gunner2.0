@@ -209,7 +209,7 @@ void update(){
         helicopter_fire_timer=0;
     }
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
-        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,30);
+        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,20);
     }
     for(int i=0; i<100; i++){
 
@@ -217,7 +217,7 @@ void update(){
            bullets[i].x+=bullets[i].vector_x;
            bullets[i].y+=bullets[i].vector_y;
            if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
-                helicopter_health-=50;
+                helicopter_health-=5;
                 bullets[i].on_screen=false;
                 helicopter_hurt_timer=3;
             }
