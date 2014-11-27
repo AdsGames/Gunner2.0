@@ -20,6 +20,7 @@ BITMAP* helicopter_bullet_image;
 BITMAP* helicopter;
 BITMAP* helicopter_hurt;
 BITMAP* box_machinegun;
+BITMAP* box_health;
 
 bool close_button_pressed;
 
@@ -193,7 +194,7 @@ void update(){
 
 
     if(helicopter_health<1){
-        create_box(helicopter_x,helicopter_y,0);
+        create_box(helicopter_x,helicopter_y,random(0,1));
         helicopter_x=100;
         helicopter_direction=LEFT;
         helicopter_health=100;
@@ -274,6 +275,8 @@ void draw(){
         if(box[i].on_screen){
 
             if(box[i].type==0)draw_sprite(buffer,box_machinegun,box[i].x,box[i].y);
+            if(box[i].type==1)draw_sprite(buffer,box_health,box[i].x,box[i].y);
+
         }
     }
 
@@ -334,6 +337,9 @@ void setup(){
 
     if (!(box_machinegun = load_bitmap("box_machinegun.png", NULL)))
       abort_on_error("Cannot find image box_machinegun.png\nPlease check your files and try again");
+
+    if (!(box_health = load_bitmap("box_health.png", NULL)))
+      abort_on_error("Cannot find image box_health.png\nPlease check your files and try again");
 }
 
 
