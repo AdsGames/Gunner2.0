@@ -37,6 +37,9 @@ int player_x;
 int player_y=550;
 int player_hurt_timer;
 int player_health=100;
+int player_fire_rate;
+int player_fire_delay_rate;
+int player_fire_rate_timer;
 
 int helicopter_x;
 int helicopter_y=30;
@@ -169,6 +172,12 @@ void update(){
 
     helicopter_hurt_timer--;
     player_hurt_timer--;
+    player_fire_rate_timer--;
+
+    if(player_fire_rate_timer<1){
+        player_fire_rate=20;
+        player_fire_delay_rate=9;
+    }
 
     if(helicopter_direction==LEFT)helicopter_x-=5;
     if(helicopter_direction==RIGHT)helicopter_x+=5;
@@ -209,8 +218,8 @@ void update(){
         create_bullet(helicopter_x+100,helicopter_y+30,HELICOPTER,helicopter_angle_radians,10);
         helicopter_fire_timer=0;
     }
-    if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>9 ){
-        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,20);
+    if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
+        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
     }
     for(int i=0; i<100; i++){
 
@@ -239,6 +248,11 @@ void update(){
                 box[i].on_screen=false;
                 if(box[i].type==1){
                     player_health=100;
+                }
+                if(box[i].type==0){
+                    player_fire_rate=20;
+                    player_fire_delay_rate=3;
+                    player_fire_rate_timer=1200;
                 }
              }
 
@@ -282,6 +296,7 @@ void draw(){
 
         }
     }
+    textprintf_ex(buffer,font,20,80,makecol(0,0,0),-1,"Firing Rate%i",player_fire_rate);
 
     draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
     draw_sprite(screen,buffer,0,0);
