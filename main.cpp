@@ -237,6 +237,9 @@ void update(){
             if(box[i].y<550)box[i].y+=5;
              if(collision(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
                 box[i].on_screen=false;
+                if(box[i].type==1){
+                    player_health=100;
+                }
              }
 
 
