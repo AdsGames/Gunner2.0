@@ -17,7 +17,7 @@ BITMAP* background;
 BITMAP* cursor;
 BITMAP* bullet_image;
 BITMAP* helicopter_bullet_image;
-BITMAP* helicopter;
+BITMAP* helicopter_image;
 BITMAP* helicopter_hurt;
 BITMAP* box_machinegun;
 BITMAP* box_health;
@@ -41,20 +41,22 @@ int player_fire_rate;
 int player_fire_delay_rate;
 int player_fire_rate_timer;
 
-int helicopter_x;
-int helicopter_y=30;
-//Forward is true
-int helicopter_direction=LEFT;
-int helicopter_hurt_timer;
-int helicopter_health=100;
-int helicopter_fire_rate=20;
-int helicopter_fire_timer;
-int helicopter_movement_timer;
-
 int bullet_delay;
 
 float mouse_angle_radians;
-float helicopter_angle_radians;
+
+struct helicopters{
+    int x;
+    int y=30;
+    int direction=LEFT;
+    int hurt_timer;
+    int health=100;
+    int fire_rate=20;
+    int fire_timer;
+    int movement_timer;
+    float angle_radians;
+    bool on_screen;
+}helicopter[10];
 
 struct bullet{
     float x;
@@ -170,7 +172,7 @@ void update(){
         player_health=100;
     }
 
-    helicopter_hurt_timer--;
+
     player_hurt_timer--;
     player_fire_rate_timer--;
 
@@ -179,57 +181,78 @@ void update(){
         player_fire_delay_rate=9;
     }
 
-    if(helicopter_direction==LEFT)helicopter_x-=5;
-    if(helicopter_direction==RIGHT)helicopter_x+=5;
+    for(int i=0; i<10; i++){
+        if(helicopter[i].on_screen){
+
+            helicopter[i].angle_radians=find_angle(helicopter[i].x+100,helicopter[i].y+30,player_x+15,player_y+20);
+
+            if(helicopter[i].direction==LEFT)helicopter[i].x-=5;
+            if(helicopter[i].direction==RIGHT)helicopter[i].x+=5;
 
 
 
-    if(helicopter_x>600){
-        helicopter_direction=HOVER;
-        helicopter_movement_timer++;
-        if(helicopter_movement_timer>120){
-            helicopter_direction=LEFT;
-            helicopter_movement_timer=0;
+            if(helicopter[i].x>600){
+                helicopter[i].direction=HOVER;
+                helicopter[i].movement_timer++;
+                if(helicopter[i].movement_timer>120){
+                    helicopter[i].direction=LEFT;
+                    helicopter[i].movement_timer=0;
+                }
+            }
+            if(helicopter[i].x<0){
+                helicopter[i].direction=HOVER;
+                helicopter[i].movement_timer++;
+                if(helicopter[i].movement_timer>120){
+                    helicopter[i].direction=RIGHT;
+                    helicopter[i].movement_timer=0;
+                }
+            }
+            if(helicopter[i].fire_rate<helicopter[i].fire_timer){
+                create_bullet(helicopter[i].x+100,helicopter[i].y+30,HELICOPTER,helicopter[i].angle_radians,10);
+                helicopter[i].fire_timer=0;
+            }
+
         }
-    }
-    if(helicopter_x<0){
-        helicopter_direction=HOVER;
-        helicopter_movement_timer++;
-        if(helicopter_movement_timer>120){
-            helicopter_direction=RIGHT;
-            helicopter_movement_timer=0;
-        }
-    }
+
+            helicopter[i].hurt_timer--;
+            helicopter[i].fire_timer++;
 
 
-    if(helicopter_health<1){
-        create_box(helicopter_x,helicopter_y,random(0,1));
-        helicopter_x=100;
-        helicopter_direction=LEFT;
-        helicopter_health=100;
+
+
+            if(helicopter[i].health<1){
+                create_box(helicopter[i].x,helicopter[i].y,random(0,1));
+                helicopter[i].x=100;
+                helicopter[i].direction=LEFT;
+                helicopter[i].health=100;
+                helicopter[i].on_screen=false;
+            }
+
     }
+
     mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
-    helicopter_angle_radians=find_angle(helicopter_x+100,helicopter_y+30,player_x+15,player_y+20);
+
 
     bullet_delay++;
 
-    helicopter_fire_timer++;
-    if(helicopter_fire_rate<helicopter_fire_timer){
-        create_bullet(helicopter_x+100,helicopter_y+30,HELICOPTER,helicopter_angle_radians,10);
-        helicopter_fire_timer=0;
-    }
+
+
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
         create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
     }
     for(int i=0; i<100; i++){
 
         if(bullets[i].on_screen){
-           bullets[i].x+=bullets[i].vector_x;
-           bullets[i].y+=bullets[i].vector_y;
-           if(collision(helicopter_x,helicopter_x+200,bullets[i].x,bullets[i].x+5,helicopter_y,helicopter_y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
-                helicopter_health-=5;
-                bullets[i].on_screen=false;
-                helicopter_hurt_timer=3;
+            bullets[i].x+=bullets[i].vector_x;
+            bullets[i].y+=bullets[i].vector_y;
+            for(int j=0; j<10; j++){
+                if(helicopter[j].on_screen){
+                    if(collision(helicopter[j].x,helicopter[j].x+200,bullets[i].x,bullets[i].x+5,helicopter[j].y,helicopter[j].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
+                        helicopter[j].health-=5;
+                        bullets[i].on_screen=false;
+                        helicopter[j].hurt_timer=3;
+                    }
+                }
             }
             if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && !bullets[i].owner){
                 player_hurt_timer=3;
@@ -267,15 +290,10 @@ void update(){
 
 void draw(){
     draw_sprite(buffer,background,0,0);
-    if(helicopter_hurt_timer<1)draw_sprite(buffer,helicopter,helicopter_x,helicopter_y);
-    else draw_sprite(buffer,helicopter_hurt,helicopter_x,helicopter_y);
+
 
     if(player_hurt_timer<1)draw_sprite(buffer,player,player_x,player_y);
     else draw_sprite(buffer,player_hurt,player_x,player_y);
-
-    rectfill(buffer,10,10,214,30,makecol(0,0,0));
-    rectfill(buffer,12,12,212,28,makecol(255,0,0));
-    rectfill(buffer,12,12,12+(helicopter_health*2),28,makecol(0,255,0));
 
     rectfill(buffer,550,10,754,30,makecol(0,0,0));
     rectfill(buffer,552,12,752,28,makecol(255,0,0));
@@ -286,6 +304,20 @@ void draw(){
         if(bullets[i].on_screen){
 
             draw_sprite(buffer,bullet_image,bullets[i].x,bullets[i].y);
+        }
+    }
+
+    for(int i=0; i<10; i++){
+        if(helicopter[i].on_screen){
+
+            rectfill(buffer,helicopter[i].x,helicopter[i].y-10,helicopter[i].x+102,helicopter[i].y+2,makecol(0,0,0));
+            rectfill(buffer,helicopter[i].x+2,helicopter[i].y-8,helicopter[i].x+100,helicopter[i].y,makecol(255,0,0));
+            rectfill(buffer,helicopter[i].x+2,helicopter[i].y-8,helicopter[i].x+(helicopter[i].health),helicopter[i].y,makecol(0,255,0));
+
+
+            if(helicopter[i].hurt_timer<1)draw_sprite(buffer,helicopter_image,helicopter[i].x,helicopter[i].y);
+            if(helicopter[i].hurt_timer>0)draw_sprite(buffer,helicopter_hurt,helicopter[i].x,helicopter[i].y);
+
         }
     }
     for(int i=0; i<10; i++){
@@ -312,6 +344,13 @@ void draw(){
 
 void setup(){
     buffer=create_bitmap(800,600);
+
+
+
+    helicopter[1].x=random(1,600);
+    helicopter[1].on_screen=true;
+    helicopter[2].y=random(100,200);
+    helicopter[2].on_screen=true;
 
 
     srand(time(NULL));
@@ -347,7 +386,7 @@ void setup(){
     if (!(helicopter_bullet_image = load_bitmap("helicopter_bullet_image.png", NULL)))
       abort_on_error("Cannot find image helicopter_bullet_image.png\nPlease check your files and try again");
 
-    if (!(helicopter = load_bitmap("helicopter.png", NULL)))
+    if (!(helicopter_image = load_bitmap("helicopter.png", NULL)))
       abort_on_error("Cannot find image helicopter.png\nPlease check your files and try again");
 
     if (!(helicopter_hurt = load_bitmap("helicopter_hurt.png", NULL)))
