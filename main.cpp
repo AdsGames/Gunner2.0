@@ -162,8 +162,11 @@ void raytrace(){
         raytracer[i].y+=raytracer[i].vector_y;
         for(int j=0; j<10; j++){
             if(collision(helicopter[j].x,helicopter[j].x+200,raytracer[i].x,raytracer[i].x,helicopter[j].y,helicopter[j].y+40,raytracer[i].y,raytracer[i].y)){
-                if(helicopter[j].on_screen)helicopter[j].health-=0.001;
-            }
+                if(helicopter[j].on_screen){
+                    helicopter[j].health-=0.05;
+                    helicopter[j].hurt_timer=3;
+                }
+           }
         }
 
     }
@@ -219,8 +222,7 @@ void update(){
     if((key[KEY_RIGHT] || key[KEY_D]) && player_x<750)player_x+=5;
 
     if(player_health<1){
-        player_x=-0;
-        player_health=100;
+        close_button_pressed=true;
     }
 
 
