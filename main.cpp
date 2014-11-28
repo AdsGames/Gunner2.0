@@ -22,6 +22,7 @@ BITMAP* helicopter_hurt;
 BITMAP* box_machinegun;
 BITMAP* box_health;
 BITMAP* laserbeam;
+BITMAP* box_laserbeam;
 
 bool close_button_pressed;
 
@@ -41,6 +42,8 @@ int player_health=100;
 int player_fire_rate;
 int player_fire_delay_rate;
 int player_fire_rate_timer;
+int player_laser_timer;
+bool player_is_lasering;
 
 int bullet_delay;
 
@@ -52,7 +55,7 @@ struct raytracer{
     float y;
     float vector_x;
     float vector_y;
-    bool is_used;
+    bool on_screen;
 
 }raytracer[10];
 
@@ -61,7 +64,7 @@ struct helicopters{
     int y=30;
     int direction=LEFT;
     int hurt_timer;
-    int health=100;
+    float health=100;
     int fire_rate=20;
     int fire_timer;
     int movement_timer;
@@ -129,6 +132,43 @@ void abort_on_error(const char *message){
 	 allegro_message("%s.\n %s\n", message, allegro_error);
 	 exit(-1);
 }
+//Helicopter factory
+void create_helicopter(){
+    bool helicopter_made=false;
+    for(int i=0; i<10; i++){
+        if(!helicopter[i].on_screen && !helicopter_made){
+            helicopter_made=true;
+            helicopter[i].health=100;
+            helicopter[i].on_screen=true;
+            helicopter[i].x=random(1,600);
+            helicopter[i].y=random(1,200);
+            helicopter[i].direction=LEFT;
+        }
+
+    }
+
+}
+
+//Raytracer
+void raytrace(){
+    player_is_lasering=true;
+    int i=1;
+    raytracer[i].x=player_x;
+    raytracer[i].y=player_y;
+    raytracer[i].vector_x=-1*cos(mouse_angle_radians);
+    raytracer[i].vector_y=-1*sin(mouse_angle_radians);
+    while(raytracer[i].x<800 && raytracer[i].y<600 && raytracer[i].x>0 && raytracer[i].y>0){
+        raytracer[i].x+=raytracer[i].vector_x;
+        raytracer[i].y+=raytracer[i].vector_y;
+        for(int j=0; j<10; j++){
+            if(collision(helicopter[j].x,helicopter[j].x+200,raytracer[i].x,raytracer[i].x,helicopter[j].y,helicopter[j].y+40,raytracer[i].y,raytracer[i].y)){
+                if(helicopter[j].on_screen)helicopter[j].health-=0.001;
+            }
+        }
+
+    }
+
+}
 //Bullet factory
 void create_bullet(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
     bool bullet_made=false;
@@ -186,6 +226,7 @@ void update(){
 
     player_hurt_timer--;
     player_fire_rate_timer--;
+    player_laser_timer--;
 
     if(player_fire_rate_timer<1){
         player_fire_rate=20;
@@ -232,11 +273,12 @@ void update(){
 
 
             if(helicopter[i].health<1){
-                create_box(helicopter[i].x,helicopter[i].y,random(0,1));
-                helicopter[i].x=100;
-                helicopter[i].direction=LEFT;
-                helicopter[i].health=100;
+                create_box(helicopter[i].x,helicopter[i].y,random(0,2));
                 helicopter[i].on_screen=false;
+                helicopter[i].health=100;
+                create_helicopter();
+
+
             }
 
     }
@@ -250,7 +292,8 @@ void update(){
 
 
     if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
-        create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
+        if(player_laser_timer<1)create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
+        else raytrace();
     }
     for(int i=0; i<100; i++){
 
@@ -281,6 +324,9 @@ void update(){
             if(box[i].y<550)box[i].y+=5;
              if(collision(player_x,player_x+50,box[i].x,box[i].x+75,player_y,player_y+50,box[i].y,box[i].y+50)){
                 box[i].on_screen=false;
+                if(box[i].type==2){
+                    player_laser_timer=120;
+                }
                 if(box[i].type==1){
                     player_health=100;
                 }
@@ -294,23 +340,8 @@ void update(){
 
         }
     }
-    if(key[KEY_R]){
-        int i=1;
-        raytracer[1].x=player_x;
-        raytracer[1].y=player_y;
-        raytracer[1].vector_x=-2*cos(mouse_angle_radians);
-        raytracer[1].vector_y=-2*sin(mouse_angle_radians);
-        while(raytracer[1].x<800 && raytracer[1].y<600 && raytracer[1].x>0 && raytracer[1].y>0){
-            raytracer[1].x+=raytracer[1].vector_x;
-            raytracer[1].y+=raytracer[1].vector_y;
-            for(int j=0; j<10; j++){
-                if(collision(helicopter[j].x,helicopter[j].x+200,raytracer[i].x,raytracer[i].x,helicopter[j].y,helicopter[j].y+40,raytracer[i].y,raytracer[i].y)){
-                   if(helicopter[j].on_screen)helicopter[j].health=0;
-                }
-            }
 
-        }
-    }
+
 
 
 
@@ -354,10 +385,13 @@ void draw(){
 
             if(box[i].type==0)draw_sprite(buffer,box_machinegun,box[i].x,box[i].y);
             if(box[i].type==1)draw_sprite(buffer,box_health,box[i].x,box[i].y);
+            if(box[i].type==2)draw_sprite(buffer,box_laserbeam,box[i].x,box[i].y);
+
 
         }
     }
-    rotate_sprite(buffer,laserbeam,player_x-800,player_y,itofix(mouse_angle_allegro));
+    if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
+    player_is_lasering=false;
     textprintf_ex(buffer,font,20,80,makecol(0,0,0),-1,"Firing Rate%i",player_fire_rate);
 
     draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
@@ -430,6 +464,9 @@ void setup(){
 
     if (!(laserbeam = load_bitmap("laserbeam.png", NULL)))
       abort_on_error("Cannot find image laserbeam.png\nPlease check your files and try again");
+
+    if (!(box_laserbeam = load_bitmap("box_laserbeam.png", NULL)))
+      abort_on_error("Cannot find image box_laserbeam.png\nPlease check your files and try again");
 }
 
 
