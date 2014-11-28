@@ -21,6 +21,7 @@ BITMAP* helicopter_image;
 BITMAP* helicopter_hurt;
 BITMAP* box_machinegun;
 BITMAP* box_health;
+BITMAP* laserbeam;
 
 bool close_button_pressed;
 
@@ -44,6 +45,7 @@ int player_fire_rate_timer;
 int bullet_delay;
 
 float mouse_angle_radians;
+float mouse_angle_allegro;
 
 struct helicopters{
     int x;
@@ -231,6 +233,7 @@ void update(){
     }
 
     mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
+    mouse_angle_allegro=mouse_angle_radians*40.5845104792;
 
 
     bullet_delay++;
@@ -328,6 +331,7 @@ void draw(){
 
         }
     }
+    rotate_sprite(buffer,laserbeam,player_x-800,player_y,itofix(mouse_angle_allegro));
     textprintf_ex(buffer,font,20,80,makecol(0,0,0),-1,"Firing Rate%i",player_fire_rate);
 
     draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
@@ -397,6 +401,9 @@ void setup(){
 
     if (!(box_health = load_bitmap("box_health.png", NULL)))
       abort_on_error("Cannot find image box_health.png\nPlease check your files and try again");
+
+    if (!(laserbeam = load_bitmap("laserbeam.png", NULL)))
+      abort_on_error("Cannot find image laserbeam.png\nPlease check your files and try again");
 }
 
 
