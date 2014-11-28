@@ -295,8 +295,21 @@ void update(){
         }
     }
     if(key[KEY_R]){
-        raytracer[1].vector_x=-1*cos(mouse_angle_radians);
-        raytracer[1].vector_y=-1*sin(mouse_angle_radians);
+        int i=1;
+        raytracer[1].x=player_x;
+        raytracer[1].y=player_y;
+        raytracer[1].vector_x=-2*cos(mouse_angle_radians);
+        raytracer[1].vector_y=-2*sin(mouse_angle_radians);
+        while(raytracer[1].x<800 && raytracer[1].y<600 && raytracer[1].x>0 && raytracer[1].y>0){
+            raytracer[1].x+=raytracer[1].vector_x;
+            raytracer[1].y+=raytracer[1].vector_y;
+            for(int j=0; j<10; j++){
+                if(collision(helicopter[j].x,helicopter[j].x+200,raytracer[i].x,raytracer[i].x,helicopter[j].y,helicopter[j].y+40,raytracer[i].y,raytracer[i].y)){
+                   if(helicopter[j].on_screen)helicopter[j].health=0;
+                }
+            }
+
+        }
     }
 
 
