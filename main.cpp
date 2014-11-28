@@ -46,6 +46,7 @@ int player_laser_timer;
 bool player_is_lasering;
 
 int bullet_delay;
+int helicopter_killcount;
 
 float mouse_angle_radians;
 float mouse_angle_allegro;
@@ -279,6 +280,7 @@ void update(){
                 helicopter[i].on_screen=false;
                 helicopter[i].health=100;
                 create_helicopter();
+                helicopter_killcount++;
 
 
             }
@@ -394,7 +396,7 @@ void draw(){
     }
     if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
     player_is_lasering=false;
-    textprintf_ex(buffer,font,20,80,makecol(0,0,0),-1,"Firing Rate%i",player_fire_rate);
+    textprintf_ex(buffer,font,20,20,makecol(0,0,0),-1,"Helicopter Killcount: %i",helicopter_killcount);
 
     draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
     draw_sprite(screen,buffer,0,0);
