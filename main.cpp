@@ -47,6 +47,15 @@ int bullet_delay;
 float mouse_angle_radians;
 float mouse_angle_allegro;
 
+struct raytracer{
+    float x;
+    float y;
+    float vector_x;
+    float vector_y;
+    bool is_used;
+
+}raytracer[10];
+
 struct helicopters{
     int x;
     int y=30;
@@ -284,6 +293,10 @@ void update(){
 
 
         }
+    }
+    if(key[KEY_R]){
+        raytracer[1].vector_x=-1*cos(mouse_angle_radians);
+        raytracer[1].vector_y=-1*sin(mouse_angle_radians);
     }
 
 
