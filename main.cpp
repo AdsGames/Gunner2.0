@@ -134,11 +134,11 @@ void abort_on_error(const char *message){
 	 exit(-1);
 }
 //Helicopter factory
-void create_helicopter(){
-    bool helicopter_made=false;
+void create_helicopter(int newAmount){
+    int helicopter_made=0;
     for(int i=0; i<10; i++){
-        if(!helicopter[i].on_screen && !helicopter_made){
-            helicopter_made=true;
+        if(!helicopter[i].on_screen && helicopter_made<newAmount){
+            helicopter_made++;
             helicopter[i].health=100;
             helicopter[i].on_screen=true;
             helicopter[i].x=random(1,600);
@@ -276,10 +276,29 @@ void update(){
 
 
             if(helicopter[i].health<1){
-                create_box(helicopter[i].x,helicopter[i].y,random(0,2));
+
+
+                if(helicopter_killcount<15){
+                    if(random(1,15-helicopter_killcount)==1){
+                        create_box(helicopter[i].x,helicopter[i].y,0);
+                    }
+                }else if(random(1,2)==1)create_box(helicopter[i].x-76,helicopter[i].y,0);
+
+                if(helicopter_killcount<20){
+                    if(random(1,20-helicopter_killcount)==1){
+                        create_box(helicopter[i].x,helicopter[i].y,2);
+                    }
+                }else create_box(helicopter[i].x-76,helicopter[i].y,2);
+
+
+
+
+                create_box(helicopter[i].x+76,helicopter[i].y,1);
                 helicopter[i].on_screen=false;
                 helicopter[i].health=100;
-                create_helicopter();
+                if(helicopter_killcount<10)create_helicopter(1);
+                if(helicopter_killcount>9)create_helicopter(random(1,2));
+
                 helicopter_killcount++;
 
 
@@ -332,12 +351,13 @@ void update(){
                     player_laser_timer=120;
                 }
                 if(box[i].type==1){
-                    player_health=100;
+                    if(player_health<90)player_health+=10;
+                    else player_health=100;
                 }
                 if(box[i].type==0){
                     player_fire_rate=20;
                     player_fire_delay_rate=3;
-                    player_fire_rate_timer=1200;
+                    player_fire_rate_timer=600;
                 }
              }
 
@@ -423,10 +443,7 @@ void setup(){
 
 
 
-    helicopter[1].x=random(1,600);
-    helicopter[1].on_screen=true;
-    helicopter[2].y=random(100,200);
-    helicopter[2].on_screen=true;
+    create_helicopter(1);
 
 
     srand(time(NULL));
