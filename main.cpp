@@ -258,10 +258,17 @@ void update(){
         player_fire_delay_rate=9;
     }
 
+    for(int i=0; i<100; i++){
+        if(mine[i].on_screen){
+            if(mine[i].y<570)mine[i].y+=10;
+        }
+    }
+
+
     for(int i=0; i<10; i++){
         if(helicopter[i].on_screen){
 
-            if(random(1,10))create_mine(helicopter[i].x,helicopter[i].y);
+            if(random(1,100)==1)create_mine(helicopter[i].x,helicopter[i].y);
 
             helicopter[i].angle_radians=find_angle(helicopter[i].x+100,helicopter[i].y+30,player_x+15,player_y+20);
 
@@ -444,6 +451,11 @@ void draw(){
             if(box[i].type==2)draw_sprite(buffer,box_laserbeam,box[i].x,box[i].y);
 
 
+        }
+    }
+    for(int i=0; i<100; i++){
+        if(mine[i].on_screen){
+            draw_sprite(buffer,mine_image,mine[i].x,mine[i].y);
         }
     }
     if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
