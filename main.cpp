@@ -367,7 +367,15 @@ void draw(){
     for(int i=0; i<100; i++){
         if(bullets[i].on_screen){
 
-            draw_sprite(buffer,bullet_image,bullets[i].x,bullets[i].y);
+            if(bullets[i].owner){
+                rectfill(buffer,bullets[i].x,bullets[i].y,bullets[i].x+5,bullets[i].y+5,makecol(0,0,0));
+                rectfill(buffer,bullets[i].x+1,bullets[i].y+1,bullets[i].x+4,bullets[i].y+4,makecol(0,0,0));
+                rectfill(buffer,bullets[i].x+2,bullets[i].y+2,bullets[i].x+3,bullets[i].y+3,makecol(0,0,0));
+            }else{
+                rectfill(buffer,bullets[i].x,bullets[i].y,bullets[i].x+5,bullets[i].y+5,makecol(255,0,0));
+                rectfill(buffer,bullets[i].x+1,bullets[i].y+1,bullets[i].x+4,bullets[i].y+4,makecol(255,0,0));
+                rectfill(buffer,bullets[i].x+2,bullets[i].y+2,bullets[i].x+3,bullets[i].y+3,makecol(255,0,0));
+            }
         }
     }
 
