@@ -23,6 +23,7 @@ BITMAP* box_machinegun;
 BITMAP* box_health;
 BITMAP* laserbeam;
 BITMAP* box_laserbeam;
+BITMAP* mine_image;
 
 bool close_button_pressed;
 
@@ -50,6 +51,12 @@ int helicopter_killcount;
 
 float mouse_angle_radians;
 float mouse_angle_allegro;
+
+struct mine{
+    int x;
+    int y;
+    bool on_screen;
+}mine[100];
 
 struct raytracer{
     float x;
@@ -132,6 +139,21 @@ void abort_on_error(const char *message){
 	 }
 	 allegro_message("%s.\n %s\n", message, allegro_error);
 	 exit(-1);
+}
+//Mine factory
+void create_mine(int newX, int newY){
+    bool mine_made=false;
+    for(int i=0; i<100; i++){
+        if(!mine[i].on_screen && !mine_made){
+            mine_made=true;
+            mine[i].on_screen=true;
+            mine[i].x=newX;
+            mine[i].y=newY;
+
+        }
+
+    }
+
 }
 //Helicopter factory
 void create_helicopter(int newAmount){
@@ -238,6 +260,8 @@ void update(){
 
     for(int i=0; i<10; i++){
         if(helicopter[i].on_screen){
+
+            if(random(1,10))create_mine(helicopter[i].x,helicopter[i].y);
 
             helicopter[i].angle_radians=find_angle(helicopter[i].x+100,helicopter[i].y+30,player_x+15,player_y+20);
 
@@ -496,6 +520,9 @@ void setup(){
 
     if (!(box_laserbeam = load_bitmap("box_laserbeam.png", NULL)))
       abort_on_error("Cannot find image box_laserbeam.png\nPlease check your files and try again");
+
+    if (!(mine_image = load_bitmap("mine.png", NULL)))
+      abort_on_error("Cannot find image mine.png\nPlease check your files and try again");
 }
 
 
