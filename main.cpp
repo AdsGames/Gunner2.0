@@ -48,6 +48,7 @@ bool player_is_lasering;
 
 int bullet_delay;
 int helicopter_killcount;
+int jump_timer=21;
 
 float mouse_angle_radians;
 float mouse_angle_allegro;
@@ -350,10 +351,20 @@ void update(){
 
 
     bullet_delay++;
+    jump_timer++;
+    if(key[KEY_SPACE] && jump_timer>20){
+      jump_timer=0;
+    }
+
+    if(jump_timer > 0 && 10 > jump_timer){
+      player_y-=20;
+    }
+    if(jump_timer>10 && jump_timer<20){
+      player_y+=20;
+    }
 
 
-
-    if((key[KEY_SPACE] || mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
+    if((mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
         if(player_laser_timer<1)create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
         else raytrace();
     }
