@@ -263,15 +263,20 @@ void update(){
     for(int i=0; i<100; i++){
         if(mine[i].on_screen){
             if(mine[i].y<570)mine[i].y+=10;
+            if(collision(mine[i].x,mine[i].x+45,player_x,player_x+50,mine[i].y,mine[i].y+20,player_y,player_y+45)){
+              mine[i].on_screen=false;
+              player_health-=20;
+            }
         }if(mine[i].health<1)
           mine[i].on_screen=false;
+
     }
 
 
     for(int i=0; i<10; i++){
         if(helicopter[i].on_screen){
 
-            if(random(1,100)==1)create_mine(helicopter[i].x,helicopter[i].y);
+            if(random(1,1000)==1)create_mine(helicopter[i].x,helicopter[i].y);
 
             helicopter[i].angle_radians=find_angle(helicopter[i].x+100,helicopter[i].y+30,player_x+15,player_y+20);
 
