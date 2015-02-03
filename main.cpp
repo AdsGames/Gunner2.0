@@ -244,8 +244,8 @@ float find_angle(int x_1, int y_1, int x_2, int y_2){
 
 
 void update(){
-    if((key[KEY_LEFT] || key[KEY_A]) && player_x>1)player_x-=5;
-    if((key[KEY_RIGHT] || key[KEY_D]) && player_x<750)player_x+=5;
+    if((key[KEY_LEFT] || key[KEY_A]) && player_x>1)player_x-=10;
+    if((key[KEY_RIGHT] || key[KEY_D]) && player_x<750)player_x+=10;
 
     if(player_health<1){
         close_button_pressed=true;
@@ -352,7 +352,7 @@ void update(){
 
     bullet_delay++;
     jump_timer++;
-    if(key[KEY_SPACE] && jump_timer>20){
+    if((key[KEY_SPACE]||key[KEY_W]) && jump_timer>20){
       jump_timer=0;
     }
 
