@@ -55,6 +55,7 @@ float mouse_angle_allegro;
 struct mine{
     int x;
     int y;
+    int health=5;
     bool on_screen;
 }mine[100];
 
@@ -149,6 +150,7 @@ void create_mine(int newX, int newY){
             mine[i].on_screen=true;
             mine[i].x=newX;
             mine[i].y=newY;
+            mine[i].health=5;
 
         }
 
@@ -261,7 +263,8 @@ void update(){
     for(int i=0; i<100; i++){
         if(mine[i].on_screen){
             if(mine[i].y<570)mine[i].y+=10;
-        }
+        }if(mine[i].health<1)
+          mine[i].on_screen=false;
     }
 
 
@@ -367,7 +370,7 @@ void update(){
                 if(mine[j].on_screen){
                     if(collision(mine[j].x,mine[j].x+200,bullets[i].x,bullets[i].x+5,mine[j].y,mine[j].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
                         bullets[i].on_screen=false;
-                        mine[j].on_screen=false;
+                        mine[j].health--;
                     }
                 }
             }
@@ -464,6 +467,10 @@ void draw(){
     for(int i=0; i<100; i++){
         if(mine[i].on_screen){
             draw_sprite(buffer,mine_image,mine[i].x,mine[i].y);
+            rectfill(buffer,mine[i].x+20,mine[i].y-16,mine[i].x+42,mine[i].y-10,makecol(0,0,0));
+            rectfill(buffer,mine[i].x+21,mine[i].y-15,mine[i].x+21+(5*4),mine[i].y-11,makecol(255,0,0));
+            rectfill(buffer,mine[i].x+21,mine[i].y-15,mine[i].x+21+(mine[i].health*4),mine[i].y-11,makecol(0,255,0));
+
         }
     }
     if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
