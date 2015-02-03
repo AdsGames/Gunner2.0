@@ -363,6 +363,14 @@ void update(){
                     }
                 }
             }
+            for(int j=0; j<10; j++){
+                if(mine[j].on_screen){
+                    if(collision(mine[j].x,mine[j].x+200,bullets[i].x,bullets[i].x+5,mine[j].y,mine[j].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
+                        bullets[i].on_screen=false;
+                        mine[j].on_screen=false;
+                    }
+                }
+            }
             if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && !bullets[i].owner){
                 player_hurt_timer=3;
                 bullets[i].on_screen=false;
