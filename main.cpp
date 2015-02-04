@@ -303,7 +303,7 @@ void update(){
                 }
             }
             if(helicopter[i].fire_rate<helicopter[i].fire_timer){
-                create_bullet(helicopter[i].x+100,helicopter[i].y+30,HELICOPTER,helicopter[i].angle_radians,10);
+                create_bullet(helicopter[i].x+100,helicopter[i].y+30,HELICOPTER,helicopter[i].angle_radians,7);
                 helicopter[i].fire_timer=0;
             }
 
