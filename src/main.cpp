@@ -1,5 +1,6 @@
 #include "tools.h"
 #include "projectile.h"
+#include "enemy.h"
 
 #define PLAYER TRUE
 #define HELICOPTER FALSE
@@ -69,19 +70,6 @@ struct raytracer{
 
 }raytracer[10];
 
-struct helicopters{
-    int x;
-    int y=30;
-    int direction=LEFT;
-    int hurt_timer;
-    float health=100;
-    int fire_rate=20;
-    int fire_timer;
-    int movement_timer;
-    float angle_radians;
-    bool on_screen;
-}helicopter[10];
-
 struct boxes{
     int x;
     int y;
@@ -90,6 +78,7 @@ struct boxes{
 }box[10];
 
 std::vector<projectile> game_projectiles;
+std::vector<enemy> game_enemies;
 
 
 void ticker(){
@@ -107,14 +96,6 @@ void close_button_handler(void){
 }
 END_OF_FUNCTION(close_button_handler)
 
-// Random number generator. Use int random(highest,lowest);
-int random(int newLowest, int newHighest)
-{
-  int lowest = newLowest, highest = newHighest;
-  int range = (highest - lowest) + 1;
-  int randomNumber = lowest+int(range*rand()/(RAND_MAX + 1.0));
-  return randomNumber;
-}
 //Collision between 2 boxes
 bool collision(float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, float yMax1, float yMin2, float yMax2)
 {
@@ -124,15 +105,6 @@ bool collision(float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, 
   return false;
 }
 
-//A function to streamline error reporting in file loading
-void abort_on_error(const char *message){
-	 set_window_title("Error!");
-	 if (screen != NULL){
-	    set_gfx_mode(GFX_TEXT, 0, 0, 0, 0);
-	 }
-	 allegro_message("%s.\n %s\n", message, allegro_error);
-	 exit(-1);
-}
 //Mine factory
 void create_mine(int newX, int newY){
     bool mine_made=false;
@@ -151,23 +123,13 @@ void create_mine(int newX, int newY){
 }
 //Helicopter factory
 void create_helicopter(int newAmount){
-    int helicopter_made=0;
-    for(int i=0; i<10; i++){
-        if(!helicopter[i].on_screen && helicopter_made<newAmount){
-            helicopter_made++;
-            helicopter[i].health=100;
-            helicopter[i].on_screen=true;
-            helicopter[i].x=random(1,600);
-            helicopter[i].y=random(1,200);
-            helicopter[i].direction=LEFT;
-        }
-
-    }
+   game_enemies.push_back(enemy(helicopter_image,helicopter_hurt));
 
 }
 
 //Raytracer
 void raytrace(){
+    /*
     player_is_lasering=true;
     int i=1;
     raytracer[i].x=player_x;
@@ -186,7 +148,7 @@ void raytrace(){
            }
         }
 
-    }
+    }*/
 
 }
 //Bullet factory
@@ -210,17 +172,7 @@ void create_box(int newX, int newY, int newType){
 }
 
 
-//Finds angle of point 2 relative to point 1
-float find_angle(int x_1, int y_1, int x_2, int y_2){
-    float tan_1;
-    float tan_2;
-    if(x_1-x_2!=0 && y_1-y_2!=0){
-        tan_1=y_1-y_2;
-        tan_2=x_1-x_2;
-    }
 
-    return atan2(tan_1,tan_2);
-}
 
 
 void update(){
@@ -255,79 +207,13 @@ void update(){
     }
 
 
-    for(int i=0; i<10; i++){
-        if(helicopter[i].on_screen){
+    for(int i=0; i<game_enemies.size(); i++){
+        game_enemies[i].update(player_x,player_y);
 
-            if(random(1,1000)==1)create_mine(helicopter[i].x,helicopter[i].y);
-
-            helicopter[i].angle_radians=find_angle(helicopter[i].x+100,helicopter[i].y+30,player_x+15,player_y+20);
-
-            if(helicopter[i].direction==LEFT)helicopter[i].x-=5;
-            if(helicopter[i].direction==RIGHT)helicopter[i].x+=5;
-
-
-
-            if(helicopter[i].x>600){
-                helicopter[i].direction=HOVER;
-                helicopter[i].movement_timer++;
-                if(helicopter[i].movement_timer>120){
-                    helicopter[i].direction=LEFT;
-                    helicopter[i].movement_timer=0;
-                }
-            }
-            if(helicopter[i].x<0){
-                helicopter[i].direction=HOVER;
-                helicopter[i].movement_timer++;
-                if(helicopter[i].movement_timer>120){
-                    helicopter[i].direction=RIGHT;
-                    helicopter[i].movement_timer=0;
-                }
-            }
-            if(helicopter[i].fire_rate<helicopter[i].fire_timer){
-                create_bullet(helicopter[i].x+100,helicopter[i].y+30,HELICOPTER,helicopter[i].angle_radians,7);
-                helicopter[i].fire_timer=0;
-            }
-
-        }
-
-            helicopter[i].hurt_timer--;
-            helicopter[i].fire_timer++;
-
-
-
-
-            if(helicopter[i].health<1){
-
-
-                if(helicopter_killcount<15){
-                    if(random(1,15-helicopter_killcount)==1){
-                        create_box(helicopter[i].x,helicopter[i].y,0);
-                    }
-                }else if(random(1,2)==1)create_box(helicopter[i].x-76,helicopter[i].y,0);
-
-                if(random(1,2)==1)create_box(helicopter[i].x,helicopter[i].y,3);
-
-                if(helicopter_killcount<20){
-                    if(random(1,20-helicopter_killcount)==1){
-                        create_box(helicopter[i].x,helicopter[i].y,2);
-                    }
-                }else create_box(helicopter[i].x-76,helicopter[i].y,2);
-
-
-
-
-                create_box(helicopter[i].x+76,helicopter[i].y,1);
-                helicopter[i].on_screen=false;
-                helicopter[i].health=100;
-                if(helicopter_killcount<10)create_helicopter(1);
-                if(helicopter_killcount>9)create_helicopter(random(1,2));
-
-                helicopter_killcount++;
-
-
-            }
 
     }
+
+
 
     mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
     mouse_angle_allegro=mouse_angle_radians*40.5845104792;
@@ -403,18 +289,8 @@ void draw(){
       game_projectiles[i].draw(buffer);
     }
 
-    for(int i=0; i<10; i++){
-        if(helicopter[i].on_screen){
-
-            rectfill(buffer,helicopter[i].x,helicopter[i].y-10,helicopter[i].x+102,helicopter[i].y+2,makecol(0,0,0));
-            rectfill(buffer,helicopter[i].x+2,helicopter[i].y-8,helicopter[i].x+100,helicopter[i].y,makecol(255,0,0));
-            rectfill(buffer,helicopter[i].x+2,helicopter[i].y-8,helicopter[i].x+(helicopter[i].health),helicopter[i].y,makecol(0,255,0));
-
-
-            if(helicopter[i].hurt_timer<1)draw_sprite(buffer,helicopter_image,helicopter[i].x,helicopter[i].y);
-            if(helicopter[i].hurt_timer>0)draw_sprite(buffer,helicopter_hurt,helicopter[i].x,helicopter[i].y);
-
-        }
+    for(int i=0; i<game_enemies.size(); i++){
+       game_enemies[i].draw(buffer);
     }
     for(int i=0; i<10; i++){
         if(box[i].on_screen){
@@ -535,8 +411,6 @@ int main(){
 
   set_gfx_mode(GFX_AUTODETECT_WINDOWED,800,600, 0, 0);
   install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,".");
-
-
 
   set_window_title("Gunner 2.0");
   setup();

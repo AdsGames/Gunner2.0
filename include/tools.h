@@ -1,6 +1,16 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
+
+#define PLAYER TRUE
+#define HELICOPTER FALSE
+
+#define LEFT 0
+#define RIGHT 1
+#define HOVER 2
+
+
+
 #include <allegro.h>
 #include <alpng.h>
 #include <string>
@@ -51,5 +61,6 @@ extern void set_next_state( int newState );
 // Error reporting
 extern void abort_on_error(const char *message);
 
+extern float find_angle(int x_1, int y_1, int x_2, int y_2);
 
 #endif // TOOLS_H
