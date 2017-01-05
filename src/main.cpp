@@ -1,6 +1,8 @@
 #include "tools.h"
 #include "projectile.h"
 #include "enemy.h"
+#include "world.h"
+#include "character.h"
 
 #define PLAYER TRUE
 #define HELICOPTER FALSE
@@ -10,14 +12,7 @@
 #define HOVER 2
 
 BITMAP* buffer;
-BITMAP* player;
-BITMAP* player_hurt;
-BITMAP* background;
 BITMAP* cursor;
-BITMAP* bullet_image;
-BITMAP* helicopter_bullet_image;
-BITMAP* helicopter_image;
-BITMAP* helicopter_hurt;
 BITMAP* box_machinegun;
 BITMAP* box_health;
 BITMAP* laserbeam;
@@ -36,23 +31,9 @@ int fps;
 int frames_done;
 int old_time;
 
-int player_x;
-int player_y=550;
-int player_hurt_timer;
-int player_health=100;
-int player_fire_rate;
-int player_fire_delay_rate;
-int player_fire_rate_timer;
-int player_laser_timer;
-int player_bouncy_timer;
-bool player_is_lasering;
 
-int bullet_delay;
 int helicopter_killcount;
 int jump_timer=21;
-
-float mouse_angle_radians;
-float mouse_angle_allegro;
 
 struct mine{
     int x;
@@ -77,9 +58,8 @@ struct boxes{
     bool on_screen=false;
 }box[10];
 
-std::vector<projectile> game_projectiles;
-std::vector<enemy> game_enemies;
 
+world game_world;
 
 void ticker(){
   ticks++;
@@ -121,11 +101,7 @@ void create_mine(int newX, int newY){
     }
 
 }
-//Helicopter factory
-void create_helicopter(int newAmount){
-   game_enemies.push_back(enemy(helicopter_image,helicopter_hurt));
 
-}
 
 //Raytracer
 void raytrace(){
@@ -151,11 +127,7 @@ void raytrace(){
     }*/
 
 }
-//Bullet factory
-projectile create_bullet(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
-  game_projectiles.push_back(projectile(newX,newY,newOwner,newAngle,newSpeed));
-  bullet_delay=0;
-}
+/*
 //Box factory
 void create_box(int newX, int newY, int newType){
     bool box_made=false;
@@ -168,32 +140,22 @@ void create_box(int newX, int newY, int newType){
             box[i].type=newType;
         }
     }
-    bullet_delay=0;
+    //bullet_delay=0;
 }
-
+*/
 
 
 
 
 void update(){
-    if((key[KEY_LEFT] || key[KEY_A]) && player_x>1)player_x-=10;
-    if((key[KEY_RIGHT] || key[KEY_D]) && player_x<750)player_x+=10;
 
-    if(player_health<1){
-        close_button_pressed=true;
-    }
+  game_world.update();
 
 
-    player_hurt_timer--;
-    player_fire_rate_timer--;
-    player_laser_timer--;
-    player_bouncy_timer--;
 
-    if(player_fire_rate_timer<1){
-        player_fire_rate=20;
-        player_fire_delay_rate=9;
-    }
 
+
+/*
     for(int i=0; i<100; i++){
         if(mine[i].on_screen){
             if(mine[i].y<570)mine[i].y+=10;
@@ -205,41 +167,22 @@ void update(){
           mine[i].on_screen=false;
 
     }
-
-
-    for(int i=0; i<game_enemies.size(); i++){
-        game_enemies[i].update(player_x,player_y);
-
-
-    }
+*/
 
 
 
-    mouse_angle_radians=find_angle(player_x+15,player_y+20,mouse_x,mouse_y);
-    mouse_angle_allegro=mouse_angle_radians*40.5845104792;
 
 
-    bullet_delay++;
-    jump_timer++;
-    if((key[KEY_SPACE]||key[KEY_W]) && jump_timer>20){
-      jump_timer=0;
-    }
-
-    if(jump_timer > 0 && 10 > jump_timer){
-      player_y-=20;
-    }
-    if(jump_timer>10 && jump_timer<20){
-      player_y+=20;
-    }
 
 
-    if((mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
-        if(player_laser_timer<1)create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
-        else raytrace();
-    }
-    for(int i=0; i<game_projectiles.size(); i++){
-      game_projectiles[i].update();
-    }
+
+
+
+   // if((mouse_b & 1) && bullet_delay>player_fire_delay_rate ){
+   //     if(player_laser_timer<1)game_world.create_projectile(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
+   //     else raytrace();
+   // }
+    /*
     for(int i=0; i<10; i++){
         if(box[i].on_screen){
             if(box[i].y<550)box[i].y+=5;
@@ -264,7 +207,8 @@ void update(){
 
 
         }
-    }
+        */
+    //}
 
 
 
@@ -274,24 +218,14 @@ void update(){
 }
 
 void draw(){
-    draw_sprite(buffer,background,0,0);
 
 
-    if(player_hurt_timer<1)draw_sprite(buffer,player,player_x,player_y);
-    else draw_sprite(buffer,player_hurt,player_x,player_y);
-
-    rectfill(buffer,550,10,754,30,makecol(0,0,0));
-    rectfill(buffer,552,12,752,28,makecol(255,0,0));
-    rectfill(buffer,552,12,552+(player_health*2),28,makecol(0,255,0));
 
 
-    for(int i=0; i<game_projectiles.size(); i++){
-      game_projectiles[i].draw(buffer);
-    }
 
-    for(int i=0; i<game_enemies.size(); i++){
-       game_enemies[i].draw(buffer);
-    }
+   game_world.draw(buffer);
+
+
     for(int i=0; i<10; i++){
         if(box[i].on_screen){
 
@@ -312,8 +246,8 @@ void draw(){
 
         }
     }
-    if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
-    player_is_lasering=false;
+    //if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
+    //player_is_lasering=false;
     textprintf_ex(buffer,font,20,20,makecol(0,0,0),-1,"Helicopter Killcount: %i",helicopter_killcount);
 
     draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
@@ -329,11 +263,14 @@ void draw(){
 
 
 void setup(){
+
+    game_world.setup();
+
     buffer=create_bitmap(800,600);
 
 
 
-    create_helicopter(1);
+
 
 
     srand(time(NULL));
@@ -351,29 +288,11 @@ void setup(){
     LOCK_FUNCTION(close_button_handler);
     set_close_button_callback(close_button_handler);
 
-    if (!(player = load_bitmap("player.png", NULL)))
-      abort_on_error("Cannot find image player.png\nPlease check your files and try again");
 
-    if (!(player_hurt = load_bitmap("player_hurt.png", NULL)))
-      abort_on_error("Cannot find image player_hurt.png\nPlease check your files and try again");
-
-    if (!(background = load_bitmap("background.png", NULL)))
-      abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 
     if (!(cursor = load_bitmap("cursor.png", NULL)))
-      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");\
+      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
 
-    if (!(bullet_image = load_bitmap("bullet_image.png", NULL)))
-      abort_on_error("Cannot find image bullet_image.png\nPlease check your files and try again");
-
-    if (!(helicopter_bullet_image = load_bitmap("helicopter_bullet_image.png", NULL)))
-      abort_on_error("Cannot find image helicopter_bullet_image.png\nPlease check your files and try again");
-
-    if (!(helicopter_image = load_bitmap("helicopter.png", NULL)))
-      abort_on_error("Cannot find image helicopter.png\nPlease check your files and try again");
-
-    if (!(helicopter_hurt = load_bitmap("helicopter_hurt.png", NULL)))
-      abort_on_error("Cannot find image helicopter_hurt.png\nPlease check your files and try again");
 
     if (!(box_machinegun = load_bitmap("box_machinegun.png", NULL)))
       abort_on_error("Cannot find image box_machinegun.png\nPlease check your files and try again");
@@ -392,6 +311,9 @@ void setup(){
 
     if (!(mine_image = load_bitmap("mine.png", NULL)))
       abort_on_error("Cannot find image mine.png\nPlease check your files and try again");
+
+
+
 }
 
 

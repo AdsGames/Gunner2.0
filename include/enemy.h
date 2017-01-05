@@ -1,6 +1,6 @@
 #ifndef ENEMY_H
 #define ENEMY_H
-#endif
+
 
 #include "tools.h"
 
@@ -26,3 +26,5 @@ class enemy{
 
 
 };
+
+#endif

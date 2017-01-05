@@ -21,35 +21,36 @@ void enemy::update(int player_x,int player_y){
 
   //if(random(1,1000)==1)create_mine(x,y);
 
-            angle_radians=find_angle(x+100,y+30,player_x+15,player_y+20);
+  angle_radians=find_angle(x+100,y+30,player_x+15,player_y+20);
 
-            if(direction==LEFT)x-=5;
-            if(direction==RIGHT)x+=5;
+  if(direction==LEFT)x-=5;
+  if(direction==RIGHT)x+=5;
 
+  if(x>600){
+    direction=HOVER;
+    movement_timer++;
+    if(movement_timer>120){
+      direction=LEFT;
+      movement_timer=0;
+    }
+  }
 
+  if(x<0){
+    direction=HOVER;
+    movement_timer++;
+    if(movement_timer>120){
+      direction=RIGHT;
+      movement_timer=0;
+    }
+  }
 
-            if(x>600){
-                direction=HOVER;
-                movement_timer++;
-                if(movement_timer>120){
-                    direction=LEFT;
-                    movement_timer=0;
-                }
-            }
-            if(x<0){
-                direction=HOVER;
-                movement_timer++;
-                if(movement_timer>120){
-                    direction=RIGHT;
-                    movement_timer=0;
-                }
-            }
-            if(fire_rate<fire_timer){
-                //create_bullet(x+100,y+30,HELICOPTER,angle_radians,7);
-                fire_timer=0;
-            }
-             hurt_timer--;
-            fire_timer++;
+  if(fire_rate<fire_timer){
+    //create_bullet(x+100,y+30,HELICOPTER,angle_radians,7);
+    fire_timer=0;
+  }
+
+  hurt_timer--;
+  fire_timer++;
 
 
               /*
