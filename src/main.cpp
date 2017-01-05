@@ -1,7 +1,5 @@
-#include<allegro.h>
-#include<alpng.h>
-#include<time.h>
-#include<cmath>
+#include "tools.h"
+#include "projectile.h"
 
 #define PLAYER TRUE
 #define HELICOPTER FALSE
@@ -23,6 +21,7 @@ BITMAP* box_machinegun;
 BITMAP* box_health;
 BITMAP* laserbeam;
 BITMAP* box_laserbeam;
+BITMAP* box_bouncy;
 BITMAP* mine_image;
 
 bool close_button_pressed;
@@ -44,6 +43,7 @@ int player_fire_rate;
 int player_fire_delay_rate;
 int player_fire_rate_timer;
 int player_laser_timer;
+int player_bouncy_timer;
 bool player_is_lasering;
 
 int bullet_delay;
@@ -82,15 +82,6 @@ struct helicopters{
     bool on_screen;
 }helicopter[10];
 
-struct bullet{
-    float x;
-    float y;
-    float vector_x;
-    float vector_y;
-    bool on_screen=false;
-    bool owner;
-}bullets[100];
-
 struct boxes{
     int x;
     int y;
@@ -98,7 +89,7 @@ struct boxes{
     bool on_screen=false;
 }box[10];
 
-
+std::vector<projectile> game_projectiles;
 
 
 void ticker(){
@@ -199,20 +190,9 @@ void raytrace(){
 
 }
 //Bullet factory
-void create_bullet(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
-    bool bullet_made=false;
-    for(int i=0; i<100; i++){
-        if(!bullets[i].on_screen && !bullet_made){
-            bullet_made=true;
-            bullets[i].on_screen=true;
-            bullets[i].x=newX;
-            bullets[i].y=newY;
-            bullets[i].vector_x=-newSpeed*cos(newAngle);
-            bullets[i].vector_y=-newSpeed*sin(newAngle);
-            bullets[i].owner=newOwner;
-        }
-    }
-    bullet_delay=0;
+projectile create_bullet(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
+  game_projectiles.push_back(projectile(newX,newY,newOwner,newAngle,newSpeed));
+  bullet_delay=0;
 }
 //Box factory
 void create_box(int newX, int newY, int newType){
@@ -255,6 +235,7 @@ void update(){
     player_hurt_timer--;
     player_fire_rate_timer--;
     player_laser_timer--;
+    player_bouncy_timer--;
 
     if(player_fire_rate_timer<1){
         player_fire_rate=20;
@@ -324,6 +305,8 @@ void update(){
                     }
                 }else if(random(1,2)==1)create_box(helicopter[i].x-76,helicopter[i].y,0);
 
+                if(random(1,2)==1)create_box(helicopter[i].x,helicopter[i].y,3);
+
                 if(helicopter_killcount<20){
                     if(random(1,20-helicopter_killcount)==1){
                         create_box(helicopter[i].x,helicopter[i].y,2);
@@ -368,37 +351,8 @@ void update(){
         if(player_laser_timer<1)create_bullet(player_x+15,player_y+20,PLAYER,mouse_angle_radians,player_fire_rate);
         else raytrace();
     }
-    for(int i=0; i<100; i++){
-
-        if(bullets[i].on_screen){
-            bullets[i].x+=bullets[i].vector_x;
-            bullets[i].y+=bullets[i].vector_y;
-            for(int j=0; j<10; j++){
-                if(helicopter[j].on_screen){
-                    if(collision(helicopter[j].x,helicopter[j].x+200,bullets[i].x,bullets[i].x+5,helicopter[j].y,helicopter[j].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
-                        helicopter[j].health-=5;
-                        bullets[i].on_screen=false;
-                        helicopter[j].hurt_timer=3;
-                    }
-                }
-            }
-            for(int j=0; j<10; j++){
-                if(mine[j].on_screen){
-                    if(collision(mine[j].x,mine[j].x+200,bullets[i].x,bullets[i].x+5,mine[j].y,mine[j].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
-                        bullets[i].on_screen=false;
-                        mine[j].health--;
-                    }
-                }
-            }
-            if(collision(player_x,player_x+50,bullets[i].x,bullets[i].x+5,player_y,player_y+50,bullets[i].y,bullets[i].y+5) && !bullets[i].owner){
-                player_hurt_timer=3;
-                bullets[i].on_screen=false;
-                player_health-=5;
-            }
-
-
-           if(bullets[i].x>800 || bullets[i].y>600 || bullets[i].x<0 || bullets[i].y<0)bullets[i].on_screen=false;
-        }
+    for(int i=0; i<game_projectiles.size(); i++){
+      game_projectiles[i].update();
     }
     for(int i=0; i<10; i++){
         if(box[i].on_screen){
@@ -416,6 +370,9 @@ void update(){
                     player_fire_rate=20;
                     player_fire_delay_rate=3;
                     player_fire_rate_timer=600;
+                }
+                if(box[i].type==3){
+                    player_bouncy_timer=600;
                 }
              }
 
@@ -442,19 +399,8 @@ void draw(){
     rectfill(buffer,552,12,552+(player_health*2),28,makecol(0,255,0));
 
 
-    for(int i=0; i<100; i++){
-        if(bullets[i].on_screen){
-
-            if(bullets[i].owner){
-                rectfill(buffer,bullets[i].x,bullets[i].y,bullets[i].x+5,bullets[i].y+5,makecol(0,0,0));
-                rectfill(buffer,bullets[i].x+1,bullets[i].y+1,bullets[i].x+4,bullets[i].y+4,makecol(0,0,0));
-                rectfill(buffer,bullets[i].x+2,bullets[i].y+2,bullets[i].x+3,bullets[i].y+3,makecol(0,0,0));
-            }else{
-                rectfill(buffer,bullets[i].x,bullets[i].y,bullets[i].x+5,bullets[i].y+5,makecol(255,0,0));
-                rectfill(buffer,bullets[i].x+1,bullets[i].y+1,bullets[i].x+4,bullets[i].y+4,makecol(255,0,0));
-                rectfill(buffer,bullets[i].x+2,bullets[i].y+2,bullets[i].x+3,bullets[i].y+3,makecol(255,0,0));
-            }
-        }
+    for(int i=0; i<game_projectiles.size(); i++){
+      game_projectiles[i].draw(buffer);
     }
 
     for(int i=0; i<10; i++){
@@ -476,6 +422,7 @@ void draw(){
             if(box[i].type==0)draw_sprite(buffer,box_machinegun,box[i].x,box[i].y);
             if(box[i].type==1)draw_sprite(buffer,box_health,box[i].x,box[i].y);
             if(box[i].type==2)draw_sprite(buffer,box_laserbeam,box[i].x,box[i].y);
+            if(box[i].type==3)draw_sprite(buffer,box_bouncy,box[i].x,box[i].y);
 
 
         }
@@ -557,6 +504,9 @@ void setup(){
 
     if (!(box_health = load_bitmap("box_health.png", NULL)))
       abort_on_error("Cannot find image box_health.png\nPlease check your files and try again");
+
+    if (!(box_bouncy = load_bitmap("box_bouncy.png", NULL)))
+      abort_on_error("Cannot find image box_bouncy.png\nPlease check your files and try again");
 
     if (!(laserbeam = load_bitmap("laserbeam.png", NULL)))
       abort_on_error("Cannot find image laserbeam.png\nPlease check your files and try again");
