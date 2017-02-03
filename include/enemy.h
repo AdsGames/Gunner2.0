@@ -3,14 +3,18 @@
 
 
 #include "tools.h"
+#include "world.h"
+
+class world;
 
 class enemy{
   public:
-    enemy(BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt);
+    enemy(BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt, world *newGameWorld);
     ~enemy();
     void update(int player_x, int player_y);
     void draw(BITMAP *tempBitmap);
   private:
+    world *game_world;
     int x;
     int y;//30
     int direction;//LEFT

@@ -23,10 +23,12 @@
 		<Compiler>
 			<Add option="-Wall" />
 		</Compiler>
+		<Unit filename="include/character.h" />
 		<Unit filename="include/enemy.h" />
 		<Unit filename="include/projectile.h" />
 		<Unit filename="include/tools.h" />
 		<Unit filename="include/world.h" />
+		<Unit filename="src/character.cpp" />
 		<Unit filename="src/enemy.cpp" />
 		<Unit filename="src/main.cpp" />
 		<Unit filename="src/projectile.cpp" />

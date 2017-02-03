@@ -1,6 +1,8 @@
 #include "enemy.h"
 
-enemy::enemy(BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt){
+enemy::enemy(BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt, world *newGameWorld){
+
+  game_world = newGameWorld;
 
   helicopter_sprite=newHelicopterSprite;
   helicopter_hurt=newHelicopterHurt;
@@ -21,7 +23,7 @@ void enemy::update(int player_x,int player_y){
 
   //if(random(1,1000)==1)create_mine(x,y);
 
-  angle_radians=find_angle(x+100,y+30,player_x+15,player_y+20);
+  //angle_radians=find_angle(x+100,y+30,player_x+15,player_y+20);
 
   if(direction==LEFT)x-=5;
   if(direction==RIGHT)x+=5;
@@ -51,6 +53,9 @@ void enemy::update(int player_x,int player_y){
 
   hurt_timer--;
   fire_timer++;
+
+  if(random(1,100)==1)
+    game_world -> create_item(1,x,y);
 
 
               /*
@@ -95,8 +100,8 @@ void enemy::draw(BITMAP *tempBitmap){
   rectfill(tempBitmap,x+2,y-8,x+100,y,makecol(255,0,0));
   rectfill(tempBitmap,x+2,y-8,x+(health),y,makecol(0,255,0));
 
- // if(hurt_timer<1)draw_sprite(tempBitmap,helicopter_sprite,x,y);
-  //if(hurt_timer>0)draw_sprite(tempBitmap,helicopter_hurt,x,y);
+  if(hurt_timer<1)draw_sprite(tempBitmap,helicopter_sprite,x,y);
+  if(hurt_timer>0)draw_sprite(tempBitmap,helicopter_hurt,x,y);
 
 
 }

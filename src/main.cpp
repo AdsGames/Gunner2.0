@@ -1,8 +1,7 @@
 #include "tools.h"
-#include "projectile.h"
-#include "enemy.h"
+#include "item.h"
 #include "world.h"
-#include "character.h"
+
 
 #define PLAYER TRUE
 #define HELICOPTER FALSE
@@ -31,34 +30,6 @@ int fps;
 int frames_done;
 int old_time;
 
-
-int helicopter_killcount;
-int jump_timer=21;
-
-struct mine{
-    int x;
-    int y;
-    int health=5;
-    bool on_screen;
-}mine[100];
-
-struct raytracer{
-    float x;
-    float y;
-    float vector_x;
-    float vector_y;
-    bool on_screen;
-
-}raytracer[10];
-
-struct boxes{
-    int x;
-    int y;
-    int type;
-    bool on_screen=false;
-}box[10];
-
-
 world game_world;
 
 void ticker(){
@@ -86,6 +57,7 @@ bool collision(float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, 
 }
 
 //Mine factory
+/*
 void create_mine(int newX, int newY){
     bool mine_made=false;
     for(int i=0; i<100; i++){
@@ -102,6 +74,7 @@ void create_mine(int newX, int newY){
 
 }
 
+*/
 
 //Raytracer
 void raytrace(){
@@ -219,13 +192,9 @@ void update(){
 
 void draw(){
 
-
-
-
-
    game_world.draw(buffer);
 
-
+  /*
     for(int i=0; i<10; i++){
         if(box[i].on_screen){
 
@@ -249,8 +218,7 @@ void draw(){
     //if(player_is_lasering)rotate_sprite(buffer,laserbeam,player_x-780,player_y,itofix(mouse_angle_allegro));
     //player_is_lasering=false;
     textprintf_ex(buffer,font,20,20,makecol(0,0,0),-1,"Helicopter Killcount: %i",helicopter_killcount);
-
-    draw_sprite(buffer,cursor,mouse_x-10,mouse_y-10);
+*/
     draw_sprite(screen,buffer,0,0);
 
 
@@ -290,8 +258,7 @@ void setup(){
 
 
 
-    if (!(cursor = load_bitmap("cursor.png", NULL)))
-      abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
+
 
 
     if (!(box_machinegun = load_bitmap("box_machinegun.png", NULL)))

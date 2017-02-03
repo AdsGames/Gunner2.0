@@ -1,9 +1,7 @@
 #include "world.h"
+#include "enemy.h"
 
 world::world(){
-
-
-
 
 
 }
@@ -13,6 +11,12 @@ world::~world(){
 }
 
 void world::setup(){
+
+  if (!(crate = load_bitmap("crate.png", NULL)))
+    abort_on_error("Cannot find image crate.png\nPlease check your files and try again");
+
+  if (!(cursor = load_bitmap("cursor.png", NULL)))
+    abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
 
   if (!(helicopter_sprite = load_bitmap("helicopter.png", NULL)))
     abort_on_error("Cannot find image helicopter.png\nPlease check your files and try again");
@@ -36,8 +40,13 @@ void world::setup(){
 }
 //Helicopter factory
 void world::create_helicopter(){
-   game_enemies.push_back(enemy(helicopter_sprite,helicopter_hurt));
+   game_enemies.push_back(enemy(helicopter_sprite,helicopter_hurt,this));
+}
 
+void world::create_item(int newType, int newX, int newY){
+
+  if(newType==1)
+    game_items.push_back(item(crate,newX,newY,newType));
 }
 
 //Bullet factory
@@ -58,6 +67,9 @@ void world::update(){
     game_projectiles[i].update();
   }
 
+  for(int i=0; i<game_items.size(); i++){
+    game_items[i].update();
+  }
   projectile_delay++;
 
 }
@@ -65,7 +77,10 @@ void world::update(){
 void world::draw(BITMAP *tempBitmap){
 
   draw_sprite(tempBitmap,background,0,0);
+
   game_character.draw(tempBitmap);
+
+
 
 
   for(int i=0; i<game_projectiles.size(); i++){
@@ -76,6 +91,11 @@ void world::draw(BITMAP *tempBitmap){
     game_enemies[i].draw(tempBitmap);
   }
 
+   for(int i=0; i<game_items.size(); i++){
+    game_items[i].draw(tempBitmap);
+  }
+
+  draw_sprite(tempBitmap,cursor,mouse_x-10,mouse_y-10);
 
 
 }
