@@ -47,7 +47,8 @@ void enemy::update(int player_x,int player_y){
   }
 
   if(fire_rate<fire_timer){
-    //create_bullet(x+100,y+30,HELICOPTER,angle_radians,7);
+    game_world -> create_projectile(x+100,y+30,HELICOPTER,find_angle(x+100,y+30,
+        game_world -> get_character_x()+30,game_world -> get_character_y()+15),5);
     fire_timer=0;
   }
 
@@ -56,6 +57,17 @@ void enemy::update(int player_x,int player_y){
 
   if(random(1,100)==1)
     game_world -> create_item(1,x,y);
+
+
+    /*
+  for(int i=0; i<10; i++){
+    if(helicopter[i].on_screen){
+      if(collision(helicopter[i].x,helicopter[i].x+200,bullets[i].x,bullets[i].x+5,helicopter[i].y,helicopter[i].y+40,bullets[i].y,bullets[i].y+5) && bullets[i].on_screen && bullets[i].owner){
+        helicopter[i].health-=5;
+        helicopter[i].hurt_timer=3;
+      }
+    }
+  }
 
 
               /*

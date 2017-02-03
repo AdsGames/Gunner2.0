@@ -10,6 +10,8 @@ class character{
     void draw(BITMAP *tempBitmap);
     void update();
     void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt);
+    int get_x();
+    int get_y();
   private:
 
     BITMAP* character_sprite;

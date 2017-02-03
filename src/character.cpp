@@ -16,6 +16,13 @@ void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt){
   jump_timer=100;
 
 }
+int character::get_x(){
+  return x;
+}
+
+int character::get_y(){
+  return y;
+}
 
 void character::update(){
 

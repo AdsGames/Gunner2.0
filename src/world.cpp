@@ -49,10 +49,24 @@ void world::create_item(int newType, int newX, int newY){
     game_items.push_back(item(crate,newX,newY,newType));
 }
 
+int world::get_character_x(){
+  return game_character.get_x();
+}
+
+int world::get_character_y(){
+  return game_character.get_y();
+}
+
 //Bullet factory
 void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
   game_projectiles.push_back(projectile(newX,newY,newOwner,newAngle,newSpeed));
   projectile_delay=0;
+}
+
+std::vector<projectile>* world::get_projectiles(){
+
+  return &game_projectiles;
+
 }
 
 void world::update(){

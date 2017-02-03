@@ -18,6 +18,12 @@ class world{
     void create_helicopter();
     void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed);
     void create_item(int newType, int newX, int newY);
+
+    std::vector<projectile>* get_projectiles();
+
+    int get_character_x();
+    int get_character_y();
+
   private:
 
     character game_character;
