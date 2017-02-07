@@ -1,6 +1,4 @@
 #include "tools.h"
-#include "item.h"
-#include "world.h"
 
 bool close_button_pressed;
 
@@ -31,15 +29,6 @@ void close_button_handler(void){
   close_button_pressed = TRUE;
 }
 END_OF_FUNCTION(close_button_handler)
-
-//Collision between 2 boxes
-bool collision(float xMin1, float xMax1, float xMin2, float xMax2, float yMin1, float yMax1, float yMin2, float yMax2)
-{
-  if (xMin1 < xMax2 && yMin1 < yMax2 && xMin2 < xMax1 && yMin2 < yMax1){
-    return true;
-  }
-  return false;
-}
 
 void update(){
 

@@ -1,5 +1,4 @@
 #include "world.h"
-#include "enemy.h"
 
 world::world(){
 
@@ -34,7 +33,7 @@ void world::setup(){
     abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 
   create_helicopter();
-  game_character.setup(character_sprite,character_hurt);
+  game_character.setup(character_sprite,character_hurt,this);
 
 
 }

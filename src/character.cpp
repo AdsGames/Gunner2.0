@@ -8,9 +8,10 @@ character::~character(){
 
 
 }
-void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt){
+void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, world *newGameWorld){
   character_sprite=newCharacterSprite;
   character_hurt=newCharacterHurt;
+  game_world = newGameWorld;
   y=550;
   health=100;
   jump_timer=100;
@@ -27,12 +28,12 @@ int character::get_y(){
 void character::update(){
 
   mouse_angle_radians=find_angle(x+15,y+20,mouse_x,mouse_y);
-  mouse_angle_allegro=mouse_angle_radians*40.5845104792;
 
   if((key[KEY_LEFT] || key[KEY_A]) && x>1)x-=10;
   if((key[KEY_RIGHT] || key[KEY_D]) && x<750)x+=10;
 
   jump_timer++;
+  projectile_delay++;
 
   if((key[KEY_SPACE]||key[KEY_W]) && jump_timer>20){
     jump_timer=0;
@@ -46,15 +47,11 @@ void character::update(){
   }
 
 
-  hurt_timer--;
-  fire_rate_timer--;
-  laser_timer--;
-  bouncy_timer--;
-
-  if(fire_rate_timer<1){
-    fire_rate=20;
-    fire_delay_rate=9;
+  if((mouse_b & 1) && projectile_delay>10 ){
+    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5);
+    projectile_delay=0;
   }
+
 }
 
 void character::draw(BITMAP *tempBitmap){

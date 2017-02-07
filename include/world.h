@@ -3,10 +3,11 @@
 
 #include "tools.h"
 #include "projectile.h"
-#include "character.h"
 #include "item.h"
+#include "character.h"
 
 class enemy;
+class character;
 
 class world{
   public:

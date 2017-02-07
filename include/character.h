@@ -2,6 +2,10 @@
 #define CHARACTER_H
 
 #include "tools.h"
+#include "world.h"
+
+
+class world;
 
 class character{
   public:
@@ -9,10 +13,13 @@ class character{
     ~character();
     void draw(BITMAP *tempBitmap);
     void update();
-    void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt);
+    void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt, world *newGameWorld);
     int get_x();
     int get_y();
+
   private:
+
+    world *game_world;
 
     BITMAP* character_sprite;
     BITMAP* character_hurt;
@@ -21,14 +28,10 @@ class character{
     int y;
     int hurt_timer;
     int health;
-    int fire_rate;
-    int fire_delay_rate;
-    int fire_rate_timer;
-    int laser_timer;
-    int bouncy_timer;
-    bool is_lasering;
+
+    int projectile_delay;
+
     float mouse_angle_radians;
-    float mouse_angle_allegro;
 
 
 };
