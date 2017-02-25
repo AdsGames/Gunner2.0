@@ -5,6 +5,7 @@
 #include "projectile.h"
 #include "item.h"
 #include "character.h"
+#include "enemy.h"
 
 class enemy;
 class character;
@@ -27,7 +28,7 @@ class world{
 
   private:
 
-    character game_character;
+    character *game_character;
     BITMAP *background;
     BITMAP *cursor;
 
@@ -43,7 +44,7 @@ class world{
     int projectile_delay;
 
     std::vector<projectile> game_projectiles;
-    std::vector<enemy> game_enemies;
+    std::vector<enemy*> game_enemies;
     std::vector<item> game_items;
 
 

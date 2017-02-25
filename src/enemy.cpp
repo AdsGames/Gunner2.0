@@ -67,7 +67,7 @@ void enemy::update(int player_x,int player_y){
         helicopter[i].hurt_timer=3;
       }
     }
-  }
+  }*/
 
 
               /*

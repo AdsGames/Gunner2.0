@@ -33,13 +33,15 @@ void world::setup(){
     abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 
   create_helicopter();
-  game_character.setup(character_sprite,character_hurt,this);
+  game_character = new character();
+  game_character -> setup( character_sprite, character_hurt, this);
 
 
 }
 //Helicopter factory
 void world::create_helicopter(){
-   game_enemies.push_back(enemy(helicopter_sprite,helicopter_hurt,this));
+  enemy *newEnemy = new enemy( helicopter_sprite, helicopter_hurt, this);
+  game_enemies.push_back( newEnemy);
 }
 
 void world::create_item(int newType, int newX, int newY){
@@ -49,17 +51,17 @@ void world::create_item(int newType, int newX, int newY){
 }
 
 int world::get_character_x(){
-  return game_character.get_x();
+  return game_character -> get_x();
 }
 
 int world::get_character_y(){
-  return game_character.get_y();
+  return game_character -> get_y();
 }
 
 //Bullet factory
 void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
   game_projectiles.push_back(projectile(newX,newY,newOwner,newAngle,newSpeed));
-  projectile_delay=0;
+  projectile_delay = 0;
 }
 
 std::vector<projectile>* world::get_projectiles(){
@@ -70,10 +72,10 @@ std::vector<projectile>* world::get_projectiles(){
 
 void world::update(){
 
-  game_character.update();
+  game_character -> update();
 
   for(int i=0; i<game_enemies.size(); i++){
-    game_enemies[i].update(0,0);
+    game_enemies[i] -> update(0,0);
   }
 
   for(int i=0; i<game_projectiles.size(); i++){
@@ -91,7 +93,7 @@ void world::draw(BITMAP *tempBitmap){
 
   draw_sprite(tempBitmap,background,0,0);
 
-  game_character.draw(tempBitmap);
+  game_character -> draw(tempBitmap);
 
 
 
@@ -101,7 +103,7 @@ void world::draw(BITMAP *tempBitmap){
   }
 
   for(int i=0; i<game_enemies.size(); i++){
-    game_enemies[i].draw(tempBitmap);
+    game_enemies[i] -> draw(tempBitmap);
   }
 
    for(int i=0; i<game_items.size(); i++){

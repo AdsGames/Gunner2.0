@@ -1,4 +1,5 @@
 #include "tools.h"
+#include "world.h"
 
 bool close_button_pressed;
 

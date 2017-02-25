@@ -4,7 +4,6 @@
 #include "tools.h"
 #include "world.h"
 
-
 class world;
 
 class character{
@@ -21,8 +20,8 @@ class character{
 
     world *game_world;
 
-    BITMAP* character_sprite;
-    BITMAP* character_hurt;
+    BITMAP *character_sprite;
+    BITMAP *character_hurt;
     int jump_timer;
     int x;
     int y;
