@@ -1,16 +1,24 @@
 #include "projectile.h"
 
-projectile::projectile(float newX, float newY, bool newOwner, float newAngle, float newSpeed){
+projectile::projectile( float newX, float newY, bool newOwner, float newAngle, float newSpeed){
 
   x = newX;
   y = newY;
-  x_velocity=-newSpeed*cos(newAngle);
-  y_velocity=-newSpeed*sin(newAngle);
+  x_velocity = -newSpeed * cos(newAngle);
+  y_velocity = -newSpeed * sin(newAngle);
   owner = newOwner;
 
 }
 projectile::~projectile(){
 
+}
+
+float projectile::get_x(){
+  return this -> x;
+}
+
+float projectile::get_y(){
+  return this -> y;
 }
 
 void projectile::update(){

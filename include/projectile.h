@@ -10,6 +10,10 @@ class projectile{
     ~projectile();
     void draw(BITMAP* tempBitmap);
     void update();
+    float get_x();
+    float get_y();
+    bool get_owner(){ return owner; }
+
   private:
     float x;
     float y;
