@@ -27,6 +27,8 @@ void enemy::update( int player_x, int player_y){
 
   if(health<=0){
     game_world -> delete_enemy(this);
+    game_world -> create_item( 1, x, y);
+
   }
 
   if( direction == LEFT)
@@ -62,8 +64,6 @@ void enemy::update( int player_x, int player_y){
   hurt_timer--;
   fire_timer++;
 
-  if( random( 1, 100) == 1)
-    game_world -> create_item( 1, x, y);
 
   for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
     if( collision( x, x + 200, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
@@ -72,6 +72,7 @@ void enemy::update( int player_x, int player_y){
       health -= 5;
       hurt_timer = 3;
       game_world -> delete_projectile(game_world -> get_projectiles() -> at(i));
+
     }
   }
 

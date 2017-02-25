@@ -27,6 +27,17 @@ int character::get_y(){
 
 void character::update(){
 
+   for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
+    if( collision( x, x + 200, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
+                   y, y + 40,  game_world -> get_projectiles() -> at(i) -> get_y(), game_world -> get_projectiles() -> at(i) -> get_y() + 5)
+                  && !game_world -> get_projectiles() -> at(i) -> get_owner()){
+      health -= 5;
+      hurt_timer = 3;
+      game_world -> delete_projectile(game_world -> get_projectiles() -> at(i));
+
+    }
+  }
+
   mouse_angle_radians=find_angle(x+15,y+20,mouse_x,mouse_y);
 
   if((key[KEY_LEFT] || key[KEY_A]) && x>1)x-=10;
@@ -34,6 +45,7 @@ void character::update(){
 
   jump_timer++;
   projectile_delay++;
+  hurt_timer--;
 
   if((key[KEY_SPACE]||key[KEY_W]) && jump_timer>20){
     jump_timer=0;
@@ -51,6 +63,8 @@ void character::update(){
     game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5);
     projectile_delay=0;
   }
+  if(health<=0)
+    health=0;
 
 }
 
