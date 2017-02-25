@@ -19,11 +19,15 @@ class world{
     void update();
     void setup();
     void draw(BITMAP *tempBitmap);
+
     void create_enemy();
     void delete_enemy(enemy* newEnemy);
+
     void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed);
     void delete_projectile(projectile* newProjectile);
+
     void create_item(int newType, int newX, int newY);
+    void delete_item(item* newItem);
 
     std::vector<projectile*>* get_projectiles();
 
@@ -49,7 +53,7 @@ class world{
 
     std::vector<projectile*> game_projectiles;
     std::vector<enemy*> game_enemies;
-    std::vector<item> game_items;
+    std::vector<item*> game_items;
 
 
 

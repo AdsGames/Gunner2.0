@@ -67,7 +67,7 @@ void world::delete_projectile(projectile* newProjectile){
 void world::create_item(int newType, int newX, int newY){
 
   if(newType==1)
-    game_items.push_back(item(crate,newX,newY,newType));
+    game_items.push_back(new item(crate,newX,newY,newType));
 }
 
 int world::get_character_x(){
@@ -103,7 +103,7 @@ void world::update(){
   }
 
   for( unsigned int i=0; i<game_items.size(); i++){
-    game_items[i].update();
+    game_items[i] -> update();
   }
   projectile_delay++;
 
@@ -127,7 +127,7 @@ void world::draw(BITMAP *tempBitmap){
   }
 
   for( unsigned int i = 0; i < game_items.size(); i++){
-    game_items[i].draw(tempBitmap);
+    game_items[i] -> draw(tempBitmap);
   }
 
   draw_sprite( tempBitmap, cursor, mouse_x - 10, mouse_y - 10);
