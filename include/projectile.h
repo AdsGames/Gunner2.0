@@ -6,7 +6,7 @@
 
 class projectile{
   public:
-    projectile(float newX, float newY, bool newOwner, float newAngle, float newSpeed);
+    projectile(float newX, float newY, bool newOwner, float newAngle, float newSpeed, int newWidth, int newHeight);
     ~projectile();
     void draw(BITMAP* tempBitmap);
     void update();
@@ -19,6 +19,8 @@ class projectile{
     float y;
     float x_velocity;
     float y_velocity;
+    int width;
+    int height;
     bool owner;
 
 

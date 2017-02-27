@@ -1,11 +1,14 @@
 #include "enemy.h"
 
-enemy::enemy( BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt, world *newGameWorld){
+enemy::enemy( BITMAP* newEnemySprite, BITMAP* newEnemyHurt, world *newGameWorld){
 
   game_world = newGameWorld;
 
-  helicopter_sprite = newHelicopterSprite;
-  helicopter_hurt = newHelicopterHurt;
+  enemy_sprite = newEnemySprite;
+  enemy_hurt = newEnemyHurt;
+
+  width = enemy_sprite -> w;
+  height = enemy_sprite -> h;
 
   hurt_timer = 0;
 
@@ -66,8 +69,15 @@ void enemy::update( int player_x, int player_y){
 
 
   for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
-    if( collision( x, x + 200, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
-                   y, y + 40,  game_world -> get_projectiles() -> at(i) -> get_y(), game_world -> get_projectiles() -> at(i) -> get_y() + 5)
+    if( collision(x,
+                  x + width,
+                  game_world -> get_projectiles() -> at(i) -> get_x(),
+                  game_world -> get_projectiles() -> at(i) -> get_x() + 5,
+                  y,
+                  y + height,
+                  game_world -> get_projectiles() -> at(i) -> get_y(),
+                  game_world -> get_projectiles() -> at(i) -> get_y() + 5
+                  )
         && game_world -> get_projectiles() -> at(i) -> get_owner()){
       health -= 5;
       hurt_timer = 3;
@@ -117,9 +127,9 @@ void enemy::draw(BITMAP *tempBitmap){
   rectfill( tempBitmap, x + 2, y - 8,  x + (health), y,     makecol(0,255,0));
 
   if( hurt_timer < 1)
-    draw_sprite( tempBitmap, helicopter_sprite, x,y );
+    draw_sprite( tempBitmap, enemy_sprite, x,y );
   if( hurt_timer > 0)
-    draw_sprite( tempBitmap, helicopter_hurt, x, y);
+    draw_sprite( tempBitmap, enemy_hurt, x, y);
 
 
 }

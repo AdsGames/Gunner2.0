@@ -1,12 +1,14 @@
 #include "projectile.h"
 
-projectile::projectile( float newX, float newY, bool newOwner, float newAngle, float newSpeed){
+projectile::projectile( float newX, float newY, bool newOwner, float newAngle, float newSpeed, int newWidth, int newHeight){
 
   x = newX;
   y = newY;
   x_velocity = -newSpeed * cos(newAngle);
   y_velocity = -newSpeed * sin(newAngle);
   owner = newOwner;
+  width = newWidth;
+  height = newHeight;
 
 }
 projectile::~projectile(){
@@ -97,13 +99,11 @@ void projectile::update(){
 void projectile::draw(BITMAP *tempBitmap){
 
   if(owner){
-    rectfill(tempBitmap,x,y,x+5,y+5,makecol(0,0,0));
-    rectfill(tempBitmap,x+1,y+1,x+4,y+4,makecol(0,0,0));
-    rectfill(tempBitmap,x+2,y+2,x+3,y+3,makecol(0,0,0));
+    rectfill(tempBitmap,x,y,x+width,y+height,makecol(0,0,0));
+
   }else{
-    rectfill(tempBitmap,x,y,x+5,y+5,makecol(255,0,0));
-    rectfill(tempBitmap,x+1,y+1,x+4,y+4,makecol(255,0,0));
-    rectfill(tempBitmap,x+2,y+2,x+3,y+3,makecol(255,0,0));
+    rectfill(tempBitmap,x,y,x+width,y+width,makecol(255,0,0));
+
   }
 
 

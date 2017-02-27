@@ -52,16 +52,9 @@ class world{
 
     BITMAP *crate;
 
-
-
     std::vector<projectile*> game_projectiles;
     std::vector<enemy*> game_enemies;
     std::vector<item*> game_items;
-
-
-
-
-
 
 };
 

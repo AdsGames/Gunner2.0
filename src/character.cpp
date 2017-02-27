@@ -13,6 +13,7 @@ void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, worl
   character_hurt=newCharacterHurt;
 
   game_world = newGameWorld;
+
   width = character_sprite -> w;
   height = character_sprite -> h;
 
