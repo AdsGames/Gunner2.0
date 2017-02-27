@@ -17,6 +17,8 @@ class item{
     int get_width(){return width;}
     int get_height(){return height;}
 
+    int get_type(){return type;}
+
   private:
 
     int x;

@@ -9,6 +9,7 @@ character::~character(){
 
 }
 void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, world *newGameWorld){
+
   character_sprite=newCharacterSprite;
   character_hurt=newCharacterHurt;
 
@@ -51,7 +52,7 @@ void character::update(){
   }
 
   for( unsigned int i = 0; i < game_world -> get_items() -> size(); i++){
-    if( collision( x,
+    if( collision(x,
                   x + 40,
                   game_world -> get_items() -> at(i) -> get_x(),
                   game_world -> get_items() -> at(i) -> get_x() + game_world -> get_items() -> at(i) -> get_width(),
@@ -59,13 +60,17 @@ void character::update(){
                   y + 40,
                   game_world -> get_items() -> at(i) -> get_y(),
                   game_world -> get_items() -> at(i) -> get_y() + game_world -> get_items() -> at(i) -> get_height())
-                 ){
+                 )
+    {
+      if(game_world -> get_items() -> at(i) -> get_type() == HEALTH){
+        health+=10;
+      }
       game_world -> delete_item(game_world -> get_items() -> at(i));
 
     }
   }
 
-  mouse_angle_radians=find_angle(x+15,y+20,mouse_x,mouse_y);
+  mouse_angle_radians = find_angle(x+15,y+20,mouse_x,mouse_y);
 
   if((key[KEY_LEFT] || key[KEY_A]) && x>1)x-=10;
   if((key[KEY_RIGHT] || key[KEY_D]) && x<750)x+=10;
@@ -85,13 +90,17 @@ void character::update(){
     y+=20;
   }
 
-
   if((mouse_b & 1) && projectile_delay>10 ){
     game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,5,5);
     projectile_delay=0;
   }
-  if(health<=0)
+  if(health<=0){
     health=0;
+    game_world -> kill_player();
+  }
+  if(health>100){
+    health=100;
+  }
 
 }
 

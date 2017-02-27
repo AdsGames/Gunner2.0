@@ -31,7 +31,7 @@ class world{
     void create_item(int newType, int newX, int newY);
     void delete_item(item* newItem);
 
-
+    void kill_player();
 
     int get_character_x();
     int get_character_y();
@@ -51,6 +51,9 @@ class world{
     BITMAP *helicopter_hurt;
 
     BITMAP *crate;
+    BITMAP *crate_health;
+
+    bool character_alive=true;
 
     std::vector<projectile*> game_projectiles;
     std::vector<enemy*> game_enemies;

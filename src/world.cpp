@@ -14,6 +14,9 @@ void world::setup(){
   if (!(crate = load_bitmap("crate.png", NULL)))
     abort_on_error("Cannot find image crate.png\nPlease check your files and try again");
 
+  if (!(crate_health = load_bitmap("crate_health.png", NULL)))
+    abort_on_error("Cannot find image crate_health.png\nPlease check your files and try again");
+
   if (!(cursor = load_bitmap("cursor.png", NULL)))
     abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
 
@@ -50,6 +53,10 @@ void world::create_enemy(){
   game_enemies.push_back( newEnemy);
 }
 
+void world::kill_player(){
+  character_alive=false;
+}
+
 void world::delete_enemy(enemy* newEnemy){
 
   std::vector<enemy*>::iterator i;
@@ -73,6 +80,9 @@ void world::delete_projectile(projectile* newProjectile){
 
 
 void world::create_item(int newType, int newX, int newY){
+
+  if(newType==0)
+    game_items.push_back(new item(crate,newX,newY,newType));
 
   if(newType==1)
     game_items.push_back(new item(crate,newX,newY,newType));
@@ -121,8 +131,8 @@ void world::update(){
   }else
     enemy_spawn_delay++;
 
-
-  game_character -> update();
+  if(character_alive)
+    game_character -> update();
 
   for( unsigned int i=0; i<game_enemies.size(); i++){
     game_enemies[i] -> update(0,0);
@@ -142,9 +152,8 @@ void world::draw(BITMAP *tempBitmap){
 
   draw_sprite(tempBitmap,background,0,0);
 
-  game_character -> draw(tempBitmap);
-
-
+  if(character_alive)
+    game_character -> draw(tempBitmap);
 
 
   for( unsigned int i = 0; i < game_projectiles.size(); i++){

@@ -34,9 +34,8 @@ int projectile::get_height(){
 
 void projectile::update(){
 
-
-            x+=x_velocity;
-            y+=y_velocity;
+  x+=x_velocity;
+  y+=y_velocity;
 
             /*
             for(int j=0; j<10; j++){

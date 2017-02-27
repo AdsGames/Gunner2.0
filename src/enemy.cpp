@@ -30,7 +30,7 @@ void enemy::update( int player_x, int player_y){
 
   if(health<=0){
     game_world -> delete_enemy(this);
-    game_world -> create_item( 1, x, y);
+    game_world -> create_item( 0, x, y);
 
   }
 

@@ -5,6 +5,8 @@
 #define PLAYER TRUE
 #define HELICOPTER FALSE
 
+#define HEALTH 0
+
 #define LEFT 0
 #define RIGHT 1
 #define HOVER 2

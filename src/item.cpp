@@ -10,6 +10,8 @@ item::item(BITMAP* newSprite, int newX, int newY, int newType){
   x = newX;
   y = newY;
 
+  type = newType;
+
 }
 item::~item(){
 
