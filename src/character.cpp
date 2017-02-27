@@ -147,8 +147,8 @@ void character::draw(BITMAP *tempBitmap){
 
   int newx=0;
   int newy=0;
-  int points[8] = { newx+16, newy,   100, 100,  100, 150,
-                         50, 200,  0,   150,  0,   100 };
+  //int points[8] = { newx+16, newy,   100, 100,  100, 150,
+  //                       50, 200,  0,   150,  0,   100 };
   polygon(tempBitmap, 4, points, makecol(0, 0, 0));
 
 
