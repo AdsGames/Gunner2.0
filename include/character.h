@@ -23,6 +23,8 @@ class character{
     BITMAP *character_sprite;
     BITMAP *character_hurt;
     int jump_timer=0;
+    //memes
+
     int x=0;
     int y=0;
     int hurt_timer=0;
