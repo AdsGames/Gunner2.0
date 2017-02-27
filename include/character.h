@@ -22,11 +22,14 @@ class character{
 
     BITMAP *character_sprite;
     BITMAP *character_hurt;
-    int jump_timer;
-    int x;
-    int y;
-    int hurt_timer;
+    int jump_timer=0;
+    int x=0;
+    int y=0;
+    int hurt_timer=0;
     int health;
+
+    int width=0;
+    int height=0;
 
     int projectile_delay;
 

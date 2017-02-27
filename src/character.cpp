@@ -11,7 +11,11 @@ character::~character(){
 void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, world *newGameWorld){
   character_sprite=newCharacterSprite;
   character_hurt=newCharacterHurt;
+
   game_world = newGameWorld;
+  width = character_sprite -> w;
+  height = character_sprite -> h;
+
   y=550;
   health=100;
   jump_timer=100;
@@ -28,12 +32,21 @@ int character::get_y(){
 void character::update(){
 
    for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
-    if( collision( x, x + 200, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
+    if( collision( x, x + 40, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
                    y, y + 40,  game_world -> get_projectiles() -> at(i) -> get_y(), game_world -> get_projectiles() -> at(i) -> get_y() + 5)
                   && !game_world -> get_projectiles() -> at(i) -> get_owner()){
       health -= 5;
       hurt_timer = 3;
       game_world -> delete_projectile(game_world -> get_projectiles() -> at(i));
+
+    }
+  }
+
+  for( unsigned int i = 0; i < game_world -> get_items() -> size(); i++){
+    if( collision( x, x + 40, game_world -> get_items() -> at(i) -> get_x(), game_world -> get_items() -> at(i) -> get_x() + 64,
+                   y, y + 40,  game_world -> get_items() -> at(i) -> get_y(), game_world -> get_items() -> at(i) -> get_y() + 32)
+                 ){
+      game_world -> delete_item(game_world -> get_items() -> at(i));
 
     }
   }

@@ -38,6 +38,12 @@ void world::setup(){
 
 
 }
+
+
+void spawn_new_enemy(int *newCounter){
+  newCounter=0;
+}
+
 //Helicopter factory
 void world::create_enemy(){
   enemy *newEnemy = new enemy( helicopter_sprite, helicopter_hurt, this);
@@ -52,6 +58,7 @@ void world::delete_enemy(enemy* newEnemy){
   if(i!=game_enemies.end()){
       game_enemies.erase(i);
   }
+  enemy_spawn_delay=0;
 }
 
 void world::delete_projectile(projectile* newProjectile){
@@ -64,12 +71,22 @@ void world::delete_projectile(projectile* newProjectile){
   }
 }
 
+
 void world::create_item(int newType, int newX, int newY){
 
   if(newType==1)
     game_items.push_back(new item(crate,newX,newY,newType));
 }
 
+void world::delete_item(item* newItem){
+
+  std::vector<item*>::iterator i;
+  i=std::find(game_items.begin(),game_items.end(),newItem);
+
+  if(i!=game_items.end()){
+      game_items.erase(i);
+  }
+}
 int world::get_character_x(){
   return game_character -> get_x();
 }
@@ -81,7 +98,6 @@ int world::get_character_y(){
 //Bullet factory
 void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
   game_projectiles.push_back(new projectile(newX,newY,newOwner,newAngle,newSpeed));
-  projectile_delay = 0;
 }
 
 std::vector<projectile*>* world::get_projectiles(){
@@ -90,7 +106,21 @@ std::vector<projectile*>* world::get_projectiles(){
 
 }
 
+std::vector<item*>* world::get_items(){
+
+  return &game_items;
+
+}
+
+
 void world::update(){
+
+  if(enemy_spawn_delay==300){
+    create_enemy();
+    enemy_spawn_delay++;
+  }else
+    enemy_spawn_delay++;
+
 
   game_character -> update();
 
@@ -105,7 +135,6 @@ void world::update(){
   for( unsigned int i=0; i<game_items.size(); i++){
     game_items[i] -> update();
   }
-  projectile_delay++;
 
 }
 

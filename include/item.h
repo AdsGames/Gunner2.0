@@ -10,6 +10,10 @@ class item{
     ~item();
     void update();
     void draw(BITMAP *tempBitmap);
+
+    int get_x(){return x;}
+    int get_y(){return y;}
+
   private:
     int x;
     int y;

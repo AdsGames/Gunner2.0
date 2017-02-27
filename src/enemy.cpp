@@ -45,7 +45,7 @@ void enemy::update( int player_x, int player_y){
     }
   }
 
-  if( x < 0){
+  if( x < 25){
     direction = HOVER;
     movement_timer++;
     if( movement_timer > 120){
