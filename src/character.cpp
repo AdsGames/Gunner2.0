@@ -8,10 +8,11 @@ character::~character(){
 
 
 }
-void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, world *newGameWorld){
+void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, BITMAP *newIcon, world *newGameWorld){
 
   character_sprite=newCharacterSprite;
   character_hurt=newCharacterHurt;
+  icon = newIcon;
 
   game_world = newGameWorld;
 
@@ -94,7 +95,9 @@ void character::update(){
   rapidfire_timer--;
   ricochet_timer--;
 
-
+  j--;
+  if(j<0)
+    j=100;
 
 
   if(rapidfire_timer<=0){
@@ -139,6 +142,14 @@ void character::draw(BITMAP *tempBitmap){
   rectfill(tempBitmap,SCREEN_W-250,10,SCREEN_W-46,30,makecol(0,0,0));
   rectfill(tempBitmap,SCREEN_W-248,12,SCREEN_W-48,28,makecol(255,0,0));
   rectfill(tempBitmap,SCREEN_W-248,12,(SCREEN_W-248)+(health*2),28,makecol(0,255,0));
+  draw_sprite(tempBitmap,icon,0,0);
+
+
+  int newx=0;
+  int newy=0;
+  int points[8] = { newx+16, newy,   100, 100,  100, 150,
+                         50, 200,  0,   150,  0,   100 };
+  polygon(tempBitmap, 4, points, makecol(0, 0, 0));
 
 
 }

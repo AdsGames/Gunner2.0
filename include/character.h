@@ -12,7 +12,7 @@ class character{
     ~character();
     void draw(BITMAP *tempBitmap);
     void update();
-    void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt, world *newGameWorld);
+    void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt, BITMAP* newIcon, world *newGameWorld);
     int get_x();
     int get_y();
 
@@ -22,8 +22,8 @@ class character{
 
     BITMAP *character_sprite;
     BITMAP *character_hurt;
+    BITMAP *icon;
     int jump_timer=0;
-    //memes
 
     int x=0;
     int y=0;
@@ -36,6 +36,8 @@ class character{
     int rapidfire_timer;
     int fire_rate;
     int ricochet_timer;
+
+    int j;
 
     int projectile_delay=0;
 

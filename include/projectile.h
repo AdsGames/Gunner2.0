@@ -14,6 +14,7 @@ class projectile{
     float get_y();
     int get_width();
     int get_height();
+    int get_lifetime();
     bool get_owner(){ return owner; }
 
   private:
@@ -25,6 +26,7 @@ class projectile{
     int height;
     bool owner;
     bool ricochet;
+    int lifetime;
 
 
 };

@@ -52,6 +52,8 @@ class world{
 
     BITMAP *crate[10];
 
+    BITMAP *icon;
+
 
     bool character_alive=true;
 

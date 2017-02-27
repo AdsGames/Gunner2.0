@@ -10,6 +10,7 @@ projectile::projectile( float newX, float newY, bool newOwner, float newAngle, f
   width = newWidth;
   height = newHeight;
   ricochet = newRicochet;
+  lifetime=500;
 
 }
 projectile::~projectile(){
@@ -32,8 +33,13 @@ int projectile::get_height(){
   return this -> height;
 }
 
+int projectile::get_lifetime(){
+  return lifetime;
+}
 
 void projectile::update(){
+
+  lifetime--;
 
   x+=x_velocity;
   y+=y_velocity;

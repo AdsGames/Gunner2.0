@@ -11,6 +11,9 @@ world::~world(){
 
 void world::setup(){
 
+  if (!(icon = load_bitmap("icon.png", NULL)))
+    abort_on_error("Cannot find image icon.png\nPlease check your files and try again");
+
   if (!(crate[EMPTY] = load_bitmap("crate.png", NULL)))
     abort_on_error("Cannot find image crate.png\nPlease check your files and try again");
 
@@ -43,7 +46,7 @@ void world::setup(){
 
   create_enemy();
   game_character = new character();
-  game_character -> setup( character_sprite, character_hurt, this);
+  game_character -> setup( character_sprite, character_hurt, icon, this);
 
 }
 
@@ -136,6 +139,8 @@ void world::update(){
 
   for( unsigned int i=0; i<game_projectiles.size(); i++){
     game_projectiles[i] -> update();
+    if(game_projectiles[i] -> get_lifetime()<0)
+      delete_projectile(game_projectiles[i]);
   }
 
   for( unsigned int i=0; i<game_items.size(); i++){
