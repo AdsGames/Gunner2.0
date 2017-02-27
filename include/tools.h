@@ -24,10 +24,6 @@
 
 //Collision
 extern bool collision(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);
-extern bool collisionBottom(int yMin1, int yMax1, int yMin2, int yMax2);
-extern bool collisionTop(int yMin1, int yMax1, int yMin2, int yMax2);
-extern bool collisionRight(int xMin1, int xMax1, int xMin2, int xMax2);
-extern bool collisionLeft(int xMin1, int xMax1, int xMin2, int xMax2);
 
 //Finds angle of point 2 relative to point 1
 extern float find_angle( float x_1, float y_1, float x_2, float y_2);

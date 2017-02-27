@@ -1,7 +1,12 @@
 #include "item.h"
 
 item::item(BITMAP* newSprite, int newX, int newY, int newType){
+
   sprite = newSprite;
+
+  width = sprite -> w;
+  height = sprite -> h;
+
   x = newX;
   y = newY;
 

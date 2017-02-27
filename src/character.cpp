@@ -33,9 +33,16 @@ int character::get_y(){
 void character::update(){
 
    for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
-    if( collision( x, x + 40, game_world -> get_projectiles() -> at(i) -> get_x(), game_world -> get_projectiles() -> at(i) -> get_x() + 5,
-                   y, y + 40,  game_world -> get_projectiles() -> at(i) -> get_y(), game_world -> get_projectiles() -> at(i) -> get_y() + 5)
-                  && !game_world -> get_projectiles() -> at(i) -> get_owner()){
+    if( collision(x,
+                  x + 40, game_world -> get_projectiles() -> at(i) -> get_x(),
+                  game_world -> get_projectiles() -> at(i) -> get_x() + game_world -> get_projectiles() -> at(i) -> get_width(),
+                  y,
+                  y + 40,
+                  game_world -> get_projectiles() -> at(i) -> get_y(),
+                  game_world -> get_projectiles() -> at(i) -> get_y() + game_world -> get_projectiles() -> at(i) -> get_height())
+                  && !game_world -> get_projectiles() -> at(i) -> get_owner()
+                  )
+    {
       health -= 5;
       hurt_timer = 3;
       game_world -> delete_projectile(game_world -> get_projectiles() -> at(i));
@@ -44,8 +51,14 @@ void character::update(){
   }
 
   for( unsigned int i = 0; i < game_world -> get_items() -> size(); i++){
-    if( collision( x, x + 40, game_world -> get_items() -> at(i) -> get_x(), game_world -> get_items() -> at(i) -> get_x() + 64,
-                   y, y + 40,  game_world -> get_items() -> at(i) -> get_y(), game_world -> get_items() -> at(i) -> get_y() + 32)
+    if( collision( x,
+                  x + 40,
+                  game_world -> get_items() -> at(i) -> get_x(),
+                  game_world -> get_items() -> at(i) -> get_x() + game_world -> get_items() -> at(i) -> get_width(),
+                  y,
+                  y + 40,
+                  game_world -> get_items() -> at(i) -> get_y(),
+                  game_world -> get_items() -> at(i) -> get_y() + game_world -> get_items() -> at(i) -> get_height())
                  ){
       game_world -> delete_item(game_world -> get_items() -> at(i));
 
@@ -74,7 +87,7 @@ void character::update(){
 
 
   if((mouse_b & 1) && projectile_delay>10 ){
-    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5);
+    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,5,5);
     projectile_delay=0;
   }
   if(health<=0)

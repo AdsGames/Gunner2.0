@@ -12,6 +12,8 @@ class projectile{
     void update();
     float get_x();
     float get_y();
+    int get_width();
+    int get_height();
     bool get_owner(){ return owner; }
 
   private:

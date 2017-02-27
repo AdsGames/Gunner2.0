@@ -96,8 +96,8 @@ int world::get_character_y(){
 }
 
 //Bullet factory
-void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed){
-  game_projectiles.push_back(new projectile(newX,newY,newOwner,newAngle,newSpeed,5,5));
+void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed,int newWidth, int newHeight){
+  game_projectiles.push_back(new projectile(newX,newY,newOwner,newAngle,newSpeed,newWidth,newHeight));
 }
 
 std::vector<projectile*>* world::get_projectiles(){

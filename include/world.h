@@ -24,7 +24,7 @@ class world{
     void delete_enemy(enemy* newEnemy);
 
     std::vector<projectile*>* get_projectiles();
-    void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed);
+    void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed, int newWidth, int newHeight);
     void delete_projectile(projectile* newProjectile);
 
     std::vector<item*>* get_items();

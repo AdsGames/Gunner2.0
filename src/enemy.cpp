@@ -60,7 +60,7 @@ void enemy::update( int player_x, int player_y){
   if( fire_rate < fire_timer){
     game_world -> create_projectile( x + 100, y + 30, HELICOPTER,
                                     find_angle( x + 100, y + 30, game_world -> get_character_x() + 30,
-                                               game_world -> get_character_y() + 15), 5);
+                                               game_world -> get_character_y() + 15), 5,5,5);
     fire_timer = 0;
   }
 
@@ -72,11 +72,11 @@ void enemy::update( int player_x, int player_y){
     if( collision(x,
                   x + width,
                   game_world -> get_projectiles() -> at(i) -> get_x(),
-                  game_world -> get_projectiles() -> at(i) -> get_x() + 5,
+                  game_world -> get_projectiles() -> at(i) -> get_x() + game_world -> get_projectiles() -> at(i) -> get_width(),
                   y,
                   y + height,
                   game_world -> get_projectiles() -> at(i) -> get_y(),
-                  game_world -> get_projectiles() -> at(i) -> get_y() + 5
+                  game_world -> get_projectiles() -> at(i) -> get_y() + game_world -> get_projectiles() -> at(i) -> get_height()
                   )
         && game_world -> get_projectiles() -> at(i) -> get_owner()){
       health -= 5;

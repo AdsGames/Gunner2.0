@@ -23,6 +23,15 @@ float projectile::get_y(){
   return this -> y;
 }
 
+int projectile::get_width(){
+  return this -> width;
+}
+
+int projectile::get_height(){
+  return this -> height;
+}
+
+
 void projectile::update(){
 
 
