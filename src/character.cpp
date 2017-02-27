@@ -136,9 +136,9 @@ void character::draw(BITMAP *tempBitmap){
   if(hurt_timer<1)draw_sprite(tempBitmap,character_sprite,x,y);
   else draw_sprite(tempBitmap,character_hurt,x,y);
 
-  rectfill(tempBitmap,SCREEN_W-150,10,SCREEN_W-46,30,makecol(0,0,0));
-  rectfill(tempBitmap,SCREEN_W-148,12,SCREEN_W-48,28,makecol(255,0,0));
-  rectfill(tempBitmap,SCREEN_W-148,12,SCREEN_W-148+(health*2),28,makecol(0,255,0));
+  rectfill(tempBitmap,SCREEN_W-250,10,SCREEN_W-46,30,makecol(0,0,0));
+  rectfill(tempBitmap,SCREEN_W-248,12,SCREEN_W-48,28,makecol(255,0,0));
+  rectfill(tempBitmap,SCREEN_W-248,12,(SCREEN_W-248)+(health*2),28,makecol(0,255,0));
 
 
 }
