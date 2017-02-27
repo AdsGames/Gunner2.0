@@ -24,7 +24,7 @@ class world{
     void delete_enemy(enemy* newEnemy);
 
     std::vector<projectile*>* get_projectiles();
-    void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed, int newWidth, int newHeight);
+    void create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed, bool newRicochet, int newWidth, int newHeight);
     void delete_projectile(projectile* newProjectile);
 
     std::vector<item*>* get_items();
@@ -50,8 +50,8 @@ class world{
     BITMAP *helicopter_sprite;
     BITMAP *helicopter_hurt;
 
-    BITMAP *crate;
-    BITMAP *crate_health;
+    BITMAP *crate[10];
+
 
     bool character_alive=true;
 

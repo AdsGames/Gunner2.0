@@ -6,6 +6,9 @@
 #define HELICOPTER FALSE
 
 #define HEALTH 0
+#define EMPTY 1
+#define RAPIDFIRE 2
+#define RICOCHET 3
 
 #define LEFT 0
 #define RIGHT 1

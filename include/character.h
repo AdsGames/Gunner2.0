@@ -33,7 +33,11 @@ class character{
     int width=0;
     int height=0;
 
-    int projectile_delay;
+    int rapidfire_timer;
+    int fire_rate;
+    int ricochet_timer;
+
+    int projectile_delay=0;
 
     float mouse_angle_radians;
 

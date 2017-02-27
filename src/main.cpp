@@ -48,7 +48,7 @@ void setup(){
 
     game_world.setup();
 
-    buffer=create_bitmap(800,600);
+    buffer=create_bitmap(1024,768);
 
     srand(time(NULL));
 
@@ -77,7 +77,7 @@ int main(){
   set_color_depth(32);
 
 
-  set_gfx_mode(GFX_AUTODETECT_WINDOWED,800,600, 0, 0);
+  set_gfx_mode(GFX_AUTODETECT_WINDOWED,1024,768, 0, 0);
   install_sound(DIGI_AUTODETECT,MIDI_AUTODETECT,".");
 
   set_window_title("Gunner 2.0");

@@ -14,12 +14,13 @@
 				<Option compiler="gcc" />
 				<Compiler>
 					<Add option="-O2" />
+					<Add option="-std=c++11" />
 					<Add directory="include" />
 				</Compiler>
 				<Linker>
 					<Add option="-s" />
 					<Add option="-lalpng" />
-					<Add library="C:/Program Files (x86)/CodeBlocks/MinGW/lib/liballegro-4.4.2-monolith-md.a" />
+					<Add option="-lalleg" />
 					<Add directory="include" />
 				</Linker>
 			</Target>

@@ -11,11 +11,17 @@ world::~world(){
 
 void world::setup(){
 
-  if (!(crate = load_bitmap("crate.png", NULL)))
+  if (!(crate[EMPTY] = load_bitmap("crate.png", NULL)))
     abort_on_error("Cannot find image crate.png\nPlease check your files and try again");
 
-  if (!(crate_health = load_bitmap("crate_health.png", NULL)))
+  if (!(crate[HEALTH] = load_bitmap("crate_health.png", NULL)))
     abort_on_error("Cannot find image crate_health.png\nPlease check your files and try again");
+
+  if (!(crate[RAPIDFIRE]= load_bitmap("crate_rapidfire.png", NULL)))
+    abort_on_error("Cannot find image crate_rapidfire.png\nPlease check your files and try again");
+
+  if (!(crate[RICOCHET] = load_bitmap("crate_ricochet.png", NULL)))
+    abort_on_error("Cannot find image crate_ricochet.png\nPlease check your files and try again");
 
   if (!(cursor = load_bitmap("cursor.png", NULL)))
     abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
@@ -39,12 +45,6 @@ void world::setup(){
   game_character = new character();
   game_character -> setup( character_sprite, character_hurt, this);
 
-
-}
-
-
-void spawn_new_enemy(int *newCounter){
-  newCounter=0;
 }
 
 //Helicopter factory
@@ -81,13 +81,9 @@ void world::delete_projectile(projectile* newProjectile){
 
 void world::create_item(int newType, int newX, int newY){
 
-  if(newType==0)
-    game_items.push_back(new item(crate,newX,newY,newType));
+  game_items.push_back(new item(crate[newType],newX,newY,newType));
 
-  if(newType==1)
-    game_items.push_back(new item(crate,newX,newY,newType));
 }
-
 void world::delete_item(item* newItem){
 
   std::vector<item*>::iterator i;
@@ -106,8 +102,8 @@ int world::get_character_y(){
 }
 
 //Bullet factory
-void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed,int newWidth, int newHeight){
-  game_projectiles.push_back(new projectile(newX,newY,newOwner,newAngle,newSpeed,newWidth,newHeight));
+void world::create_projectile(int newX, int newY, bool newOwner, float newAngle, float newSpeed, bool newRicochet, int newWidth, int newHeight){
+  game_projectiles.push_back(new projectile(newX,newY,newOwner,newAngle,newSpeed,newRicochet,newWidth,newHeight));
 }
 
 std::vector<projectile*>* world::get_projectiles(){

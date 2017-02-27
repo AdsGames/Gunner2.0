@@ -30,7 +30,7 @@ void enemy::update( int player_x, int player_y){
 
   if(health<=0){
     game_world -> delete_enemy(this);
-    game_world -> create_item( 0, x, y);
+    game_world -> create_item( RICOCHET, x, y);
 
   }
 
@@ -39,7 +39,7 @@ void enemy::update( int player_x, int player_y){
   if( direction == RIGHT)
     x += 5;
 
-  if( x > 600){
+  if( x > SCREEN_H-200){
     direction = HOVER;
     movement_timer++;
     if( movement_timer > 120){
@@ -60,7 +60,7 @@ void enemy::update( int player_x, int player_y){
   if( fire_rate < fire_timer){
     game_world -> create_projectile( x + 100, y + 30, HELICOPTER,
                                     find_angle( x + 100, y + 30, game_world -> get_character_x() + 30,
-                                               game_world -> get_character_y() + 15), 5,5,5);
+                                               game_world -> get_character_y() + 15),5,false,5,5);
     fire_timer = 0;
   }
 

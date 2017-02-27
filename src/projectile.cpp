@@ -1,6 +1,6 @@
 #include "projectile.h"
 
-projectile::projectile( float newX, float newY, bool newOwner, float newAngle, float newSpeed, int newWidth, int newHeight){
+projectile::projectile( float newX, float newY, bool newOwner, float newAngle, float newSpeed, bool newRicochet, int newWidth, int newHeight){
 
   x = newX;
   y = newY;
@@ -9,6 +9,7 @@ projectile::projectile( float newX, float newY, bool newOwner, float newAngle, f
   owner = newOwner;
   width = newWidth;
   height = newHeight;
+  ricochet = newRicochet;
 
 }
 projectile::~projectile(){
@@ -36,6 +37,18 @@ void projectile::update(){
 
   x+=x_velocity;
   y+=y_velocity;
+
+  if(ricochet){
+    if(x+width>SCREEN_W)
+      x_velocity=-x_velocity;
+    if(x<0)
+      x_velocity=-x_velocity;
+
+    if(y+height>SCREEN_H)
+      y_velocity=-y_velocity;
+    if(y<0)
+      y_velocity=-y_velocity;
+  }
 
             /*
             for(int j=0; j<10; j++){

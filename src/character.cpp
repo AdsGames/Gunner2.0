@@ -18,9 +18,12 @@ void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, worl
   width = character_sprite -> w;
   height = character_sprite -> h;
 
-  y=550;
+  y=SCREEN_H-50;
   health=100;
   jump_timer=100;
+  projectile_delay=0;
+  fire_rate=10;
+
 
 }
 int character::get_x(){
@@ -65,6 +68,16 @@ void character::update(){
       if(game_world -> get_items() -> at(i) -> get_type() == HEALTH){
         health+=10;
       }
+      if(game_world -> get_items() -> at(i) -> get_type() == RAPIDFIRE){
+        rapidfire_timer=1000;
+        fire_rate=2;
+      }
+      if(game_world -> get_items() -> at(i) -> get_type() == RICOCHET){
+        ricochet_timer=1000;
+
+      }
+
+
       game_world -> delete_item(game_world -> get_items() -> at(i));
 
     }
@@ -78,6 +91,19 @@ void character::update(){
   jump_timer++;
   projectile_delay++;
   hurt_timer--;
+  rapidfire_timer--;
+  ricochet_timer--;
+
+
+
+
+  if(rapidfire_timer<=0){
+    fire_rate=10;
+    rapidfire_timer=0;
+  }
+
+  if(ricochet_timer<=0)
+    ricochet_timer=0;
 
   if((key[KEY_SPACE]||key[KEY_W]) && jump_timer>20){
     jump_timer=0;
@@ -90,8 +116,9 @@ void character::update(){
     y+=20;
   }
 
-  if((mouse_b & 1) && projectile_delay>10 ){
-    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,5,5);
+  if((mouse_b & 1) && projectile_delay>fire_rate){
+
+    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,ricochet_timer>0,5,5);
     projectile_delay=0;
   }
   if(health<=0){
@@ -109,9 +136,9 @@ void character::draw(BITMAP *tempBitmap){
   if(hurt_timer<1)draw_sprite(tempBitmap,character_sprite,x,y);
   else draw_sprite(tempBitmap,character_hurt,x,y);
 
-  rectfill(tempBitmap,550,10,754,30,makecol(0,0,0));
-  rectfill(tempBitmap,552,12,752,28,makecol(255,0,0));
-  rectfill(tempBitmap,552,12,552+(health*2),28,makecol(0,255,0));
+  rectfill(tempBitmap,SCREEN_W-150,10,SCREEN_W-46,30,makecol(0,0,0));
+  rectfill(tempBitmap,SCREEN_W-148,12,SCREEN_W-48,28,makecol(255,0,0));
+  rectfill(tempBitmap,SCREEN_W-148,12,SCREEN_W-148+(health*2),28,makecol(0,255,0));
 
 
 }

@@ -20,7 +20,7 @@ item::~item(){
 
 void item::update(){
 
-  if(y<550)
+  if(y<SCREEN_H-50)
     y+=5;
 }
 
