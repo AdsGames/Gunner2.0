@@ -14,6 +14,7 @@
 #define RIGHT 1
 #define HOVER 2
 
+#define PI 3.14159265359
 
 
 #include <allegro.h>
@@ -33,6 +34,7 @@ extern bool collision(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int
 //Finds angle of point 2 relative to point 1
 extern float find_angle( float x_1, float y_1, float x_2, float y_2);
 extern float find_distance( float x_1, float y_1, float x_2, float y_2);
+extern float degrees_to_radians(float);
 
 // Mouse position including resolution difference
 extern int mouseX();

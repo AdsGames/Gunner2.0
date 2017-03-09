@@ -15,6 +15,9 @@ class character{
     void setup(BITMAP *newCharacterSprite, BITMAP *newCharacterHurt, BITMAP* newIcon, world *newGameWorld);
     int get_x();
     int get_y();
+    float radians( float degrees );
+    void draw_timer(BITMAP *bitmap, int newX, int newY, int newTime,float newRadius);
+
 
   private:
 
@@ -37,7 +40,7 @@ class character{
     int fire_rate;
     int ricochet_timer;
 
-    int j;
+    int time=0;
 
     int projectile_delay=0;
 

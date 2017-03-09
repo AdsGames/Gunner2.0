@@ -25,6 +25,10 @@ bool fexists(const char *filename){
   std::ifstream ifile(filename);
   return ifile;
 }
+float degrees_to_radians(float newDegrees){
+
+    return newDegrees * PI / 180;
+}
 
 int random(int newLowest, int newHighest)
 {

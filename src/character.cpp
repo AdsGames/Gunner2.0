@@ -35,6 +35,30 @@ int character::get_y(){
   return y;
 }
 
+void character::draw_timer(BITMAP *bitmap, int newX, int newY, int newTime, float newRadius){
+
+  int centre_x = newX+newRadius;
+  int centre_y = newY+newRadius;
+  circlefill(bitmap, newX+newRadius,newY+newRadius,newRadius-1,makecol(255,0,0));
+
+  int points[720];
+
+  points[0]=centre_x;
+  points[1]=centre_y;
+
+  points[2]=centre_x;
+  points[3]=centre_y-newRadius;
+
+  for(int i=0; i<time; i+=2){
+
+    points [i+4] = centre_x + (float)newRadius*cos(degrees_to_radians(i)-PI/2);
+    points [i+5] = centre_y + (float)newRadius*sin(degrees_to_radians(i)-PI/2 );
+  }
+
+  polygon(bitmap, time/2, points, makecol(0, 0, 0));
+
+}
+
 void character::update(){
 
    for( unsigned int i = 0; i < game_world -> get_projectiles() -> size(); i++){
@@ -95,15 +119,15 @@ void character::update(){
   rapidfire_timer--;
   ricochet_timer--;
 
-  j+=5;
-  if(j>360)
-    j=0;
-
 
   if(rapidfire_timer<=0){
     fire_rate=10;
     rapidfire_timer=0;
   }
+
+  if(time>360)
+    time=0;
+  time+=6;
 
   if(ricochet_timer<=0)
     ricochet_timer=0;
@@ -143,15 +167,11 @@ void character::draw(BITMAP *tempBitmap){
   rectfill(tempBitmap,SCREEN_W-248,12,SCREEN_W-48,28,makecol(255,0,0));
   rectfill(tempBitmap,SCREEN_W-248,12,(SCREEN_W-248)+(health*2),28,makecol(0,255,0));
   //draw_sprite(tempBitmap,icon,0,0);
-  circlefill(tempBitmap, 50,50,50,makecol(255,0,0));
 
-  int points[j];
+  draw_timer(tempBitmap,75,200,time,50);
 
-  for(int i=0;i>j;i+=2){
-    points[i]=fjlskafj
-  }
+  draw_timer(tempBitmap,200,200,time,75);
 
-  polygon(tempBitmap, j/2, points, makecol(0, 0, 0));
-
+   draw_timer(tempBitmap,100,100,time,25);
 
 }
