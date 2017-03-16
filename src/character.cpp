@@ -23,7 +23,9 @@ void character::setup(BITMAP* newCharacterSprite, BITMAP* newCharacterHurt, BITM
   health=100;
   jump_timer=100;
   projectile_delay=0;
-  fire_rate=10;
+  for(int i=0; i<5; i++){
+
+  }
 
 
 }
@@ -49,13 +51,13 @@ void character::draw_timer(BITMAP *bitmap, int newX, int newY, int newTime, floa
   points[2]=centre_x;
   points[3]=centre_y-newRadius;
 
-  for(int i=0; i<time; i+=2){
+  for(int i=0; i<newTime; i+=2){
 
     points [i+4] = centre_x + (float)newRadius*cos(degrees_to_radians(i)-PI/2);
     points [i+5] = centre_y + (float)newRadius*sin(degrees_to_radians(i)-PI/2 );
   }
 
-  polygon(bitmap, time/2, points, makecol(0, 0, 0));
+  polygon(bitmap, newTime/2, points, makecol(0, 0, 0));
 
 }
 
@@ -95,10 +97,10 @@ void character::update(){
       }
       if(game_world -> get_items() -> at(i) -> get_type() == RAPIDFIRE){
         rapidfire_timer=1000;
-        fire_rate=2;
+        //fire_rate=2;
       }
       if(game_world -> get_items() -> at(i) -> get_type() == RICOCHET){
-        ricochet_timer=1000;
+        ricochet_timer=720;
 
       }
 
@@ -111,7 +113,7 @@ void character::update(){
   mouse_angle_radians = find_angle(x+15,y+20,mouse_x,mouse_y);
 
   if((key[KEY_LEFT] || key[KEY_A]) && x>1)x-=10;
-  if((key[KEY_RIGHT] || key[KEY_D]) && x<750)x+=10;
+  if((key[KEY_RIGHT] || key[KEY_D]) && x<SCREEN_W-50)x+=10;
 
   jump_timer++;
   projectile_delay++;
@@ -121,13 +123,13 @@ void character::update(){
 
 
   if(rapidfire_timer<=0){
-    fire_rate=10;
+   // fire_rate=10;
     rapidfire_timer=0;
   }
 
   if(time>360)
     time=0;
-  time+=6;
+  time+=1;
 
   if(ricochet_timer<=0)
     ricochet_timer=0;
@@ -143,11 +145,17 @@ void character::update(){
     y+=20;
   }
 
-  if((mouse_b & 1) && projectile_delay>fire_rate){
-
-    game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,ricochet_timer>0,5,5);
-    projectile_delay=0;
+  if((mouse_b & 1) && projectile_delay>10){
+    //if(fire_mode[weapon] || (!fire_mode[weapon] && !weapon_fired)){
+      weapon_fired=true;
+      game_world -> create_projectile(x+15,y+20,PLAYER,mouse_angle_radians,5,ricochet_timer>0,5,5);
+      projectile_delay=0;
+   // }
   }
+
+  if(!(mouse_b & 1))
+    weapon_fired=false;
+
   if(health<=0){
     health=0;
     game_world -> kill_player();
@@ -167,11 +175,8 @@ void character::draw(BITMAP *tempBitmap){
   rectfill(tempBitmap,SCREEN_W-248,12,SCREEN_W-48,28,makecol(255,0,0));
   rectfill(tempBitmap,SCREEN_W-248,12,(SCREEN_W-248)+(health*2),28,makecol(0,255,0));
   //draw_sprite(tempBitmap,icon,0,0);
+  if(ricochet_timer>0)draw_timer(tempBitmap,25,25,(ricochet_timer)/2,50);
 
-  draw_timer(tempBitmap,75,200,time,50);
 
-  draw_timer(tempBitmap,200,200,time,75);
-
-   draw_timer(tempBitmap,100,100,time,25);
 
 }

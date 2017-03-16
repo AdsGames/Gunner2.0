@@ -19,12 +19,12 @@ bool collision(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1,
   }
   return false;
 }
-
+// it randomly borked
 //Checks if file exists
-bool fexists(const char *filename){
-  std::ifstream ifile(filename);
-  return ifile;
-}
+//bool fexists(const char *filename){
+  //std::ifstream ifile(filename);
+//  return ifile;
+//}
 float degrees_to_radians(float newDegrees){
 
     return newDegrees * PI / 180;

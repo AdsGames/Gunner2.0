@@ -14,15 +14,15 @@ enemy::enemy( BITMAP* newEnemySprite, BITMAP* newEnemyHurt, world *newGameWorld)
 
   fire_rate = 20;
   health = 100;
-  x = random( 1, 600);
-  y = random( 1, 200);
+  x = 25;
+  y = random( 25, 200);
   direction = LEFT;
 }
 
 enemy::~enemy(){
 }
 
-void enemy::update( int player_x, int player_y){
+void enemy::update(){
 
   //if(random(1,1000)==1)create_mine(x,y);
 
@@ -39,7 +39,7 @@ void enemy::update( int player_x, int player_y){
   if( direction == RIGHT)
     x += 5;
 
-  if( x > SCREEN_H-200){
+  if( x > SCREEN_W-200){
     direction = HOVER;
     movement_timer++;
     if( movement_timer > 120){

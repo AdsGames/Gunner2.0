@@ -11,7 +11,7 @@ class enemy{
   public:
     enemy(BITMAP* newHelicopterSprite, BITMAP* newHelicopterHurt, world *newGameWorld);
     ~enemy();
-    void update(int player_x, int player_y);
+    void update();
     void draw(BITMAP *tempBitmap);
   private:
 

@@ -37,12 +37,21 @@ class character{
     int height=0;
 
     int rapidfire_timer;
-    int fire_rate;
     int ricochet_timer;
+
+
+    int weapon=0;
+    //int fire_rate[5];
+    //bool fire_mode[5]={false,false,false,false,false};
+    int poop[5];
+
 
     int time=0;
 
     int projectile_delay=0;
+
+
+    bool weapon_fired=false;
 
     float mouse_angle_radians;
 

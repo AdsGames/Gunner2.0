@@ -134,7 +134,7 @@ void world::update(){
     game_character -> update();
 
   for( unsigned int i=0; i<game_enemies.size(); i++){
-    game_enemies[i] -> update(0,0);
+    game_enemies[i] -> update();
   }
 
   for( unsigned int i=0; i<game_projectiles.size(); i++){

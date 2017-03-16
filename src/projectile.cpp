@@ -118,20 +118,23 @@ void projectile::update(){
              }
            }
         }
-
+d
             if(bullets[i].owner==HELICOPTER)if(bullets[i].x>800 || bullets[i].y>600 || bullets[i].x<0 || bullets[i].y<0)bullets[i].on_screen=false;
         */
 }
 
 void projectile::draw(BITMAP *tempBitmap){
 
-  if(owner){
+  if(owner)
     rectfill(tempBitmap,x,y,x+width,y+height,makecol(0,0,0));
 
-  }else{
+  else
     rectfill(tempBitmap,x,y,x+width,y+width,makecol(255,0,0));
 
-  }
+  if(ricochet)
+    rect(tempBitmap,x,y,x+width,y+height,makecol(0,255,0));
+
+
 
 
 }
