@@ -1,7 +1,6 @@
 #ifndef TOOLS_H
 #define TOOLS_H
 
-
 #define PLAYER TRUE
 #define HELICOPTER FALSE
 
@@ -16,44 +15,48 @@
 
 #define PI 3.14159265359
 
-
 #include <allegro.h>
 #include <loadpng.h>
-#include <string>
+#include <cmath>
+#include <fstream>
 #include <iostream>
 #include <sstream>
-#include <fstream>
-#include <cmath>
+#include <string>
 #include <vector>
 
+// Collision
+extern bool collision(int xMin1,
+                      int xMax1,
+                      int xMin2,
+                      int xMax2,
+                      int yMin1,
+                      int yMax1,
+                      int yMin2,
+                      int yMax2);
 
-
-//Collision
-extern bool collision(int xMin1, int xMax1, int xMin2, int xMax2, int yMin1, int yMax1, int yMin2, int yMax2);
-
-//Finds angle of point 2 relative to point 1
-extern float find_angle( float x_1, float y_1, float x_2, float y_2);
-extern float find_distance( float x_1, float y_1, float x_2, float y_2);
+// Finds angle of point 2 relative to point 1
+extern float find_angle(float x_1, float y_1, float x_2, float y_2);
+extern float find_distance(float x_1, float y_1, float x_2, float y_2);
 extern float degrees_to_radians(float);
 
 // Mouse position including resolution difference
 extern int mouseX();
 extern int mouseY();
 
-//Checks if file exists
-extern bool fexists(const char *filename);
+// Checks if file exists
+extern bool fexists(const char* filename);
 
-//Random number generator
+// Random number generator
 extern int random(int newLowest, int newHighest);
 extern float randomf(float newLowest, float newHighest);
 
-//Convert int to string
+// Convert int to string
 extern std::string convertIntToString(int number);
 
-//Convert double to string
+// Convert double to string
 extern std::string convertDoubleToString(double number);
 
-//Convert bool to string
+// Convert bool to string
 extern std::string convertBoolToString(bool boolean);
 
 // Fade in and out
@@ -61,11 +64,11 @@ extern void highcolor_fade_in(BITMAP* bmp_orig, int speed);
 extern void highcolor_fade_out(int speed);
 
 // Next state
-extern void set_next_state( int newState );
+extern void set_next_state(int newState);
 
 // Error reporting
-extern void abort_on_error(const char *message);
+extern void abort_on_error(const char* message);
 
 extern float find_angle(int x_1, int y_1, int x_2, int y_2);
 
-#endif // TOOLS_H
+#endif  // TOOLS_H
