@@ -70,7 +70,6 @@ void setup(){
 int main(){
 
   allegro_init();
-  alpng_init();
   install_timer();
   install_keyboard();
   install_mouse();

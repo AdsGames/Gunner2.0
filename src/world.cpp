@@ -11,37 +11,37 @@ world::~world(){
 
 void world::setup(){
 
-  if (!(icon = load_bitmap("icon.png", NULL)))
+  if (!(icon = load_png("icon.png", NULL)))
     abort_on_error("Cannot find image icon.png\nPlease check your files and try again");
 
-  if (!(crate[EMPTY] = load_bitmap("crate.png", NULL)))
+  if (!(crate[EMPTY] = load_png("crate.png", NULL)))
     abort_on_error("Cannot find image crate.png\nPlease check your files and try again");
 
-  if (!(crate[HEALTH] = load_bitmap("crate_health.png", NULL)))
+  if (!(crate[HEALTH] = load_png("crate_health.png", NULL)))
     abort_on_error("Cannot find image crate_health.png\nPlease check your files and try again");
 
-  if (!(crate[RAPIDFIRE]= load_bitmap("crate_rapidfire.png", NULL)))
+  if (!(crate[RAPIDFIRE]= load_png("crate_rapidfire.png", NULL)))
     abort_on_error("Cannot find image crate_rapidfire.png\nPlease check your files and try again");
 
-  if (!(crate[RICOCHET] = load_bitmap("crate_ricochet.png", NULL)))
+  if (!(crate[RICOCHET] = load_png("crate_ricochet.png", NULL)))
     abort_on_error("Cannot find image crate_ricochet.png\nPlease check your files and try again");
 
-  if (!(cursor = load_bitmap("cursor.png", NULL)))
+  if (!(cursor = load_png("cursor.png", NULL)))
     abort_on_error("Cannot find image cursor.png\nPlease check your files and try again");
 
-  if (!(helicopter_sprite = load_bitmap("helicopter.png", NULL)))
+  if (!(helicopter_sprite = load_png("helicopter.png", NULL)))
     abort_on_error("Cannot find image helicopter.png\nPlease check your files and try again");
 
-  if (!(helicopter_hurt = load_bitmap("helicopter_hurt.png", NULL)))
+  if (!(helicopter_hurt = load_png("helicopter_hurt.png", NULL)))
     abort_on_error("Cannot find image helicopter_hurt.png\nPlease check your files and try again");
 
-  if (!(character_sprite = load_bitmap("player.png", NULL)))
+  if (!(character_sprite = load_png("player.png", NULL)))
     abort_on_error("Cannot find image player.png\nPlease check your files and try again");
 
-  if (!(character_hurt = load_bitmap("player_hurt.png", NULL)))
+  if (!(character_hurt = load_png("player_hurt.png", NULL)))
     abort_on_error("Cannot find image player_hurt.png\nPlease check your files and try again");
 
-  if (!(background = load_bitmap("background.png", NULL)))
+  if (!(background = load_png("background.png", NULL)))
     abort_on_error("Cannot find image background.png\nPlease check your files and try again");
 
   create_enemy();

@@ -18,7 +18,7 @@
 
 
 #include <allegro.h>
-#include <alpng.h>
+#include <loadpng.h>
 #include <string>
 #include <iostream>
 #include <sstream>
