@@ -9,7 +9,15 @@ namespace {
 
 constexpr size_t MAX_PARTICLES = 2500;
 
+// Largest shake offset in pixels, and how fast it fades per second
+constexpr float MAX_SHAKE = 30.0F;
+constexpr float SHAKE_DECAY = 45.0F;
+
 }  // namespace
+
+Effects::Effects() : camera(asw::Vec2f(SCREEN_W, SCREEN_H)) {
+  camera.set_shake_decay(SHAKE_DECAY);
+}
 
 void Effects::add(const Particle& particle) {
   if (particles.size() < MAX_PARTICLES) {
@@ -48,15 +56,8 @@ void Effects::update(float dt) {
     audio::play("explosion", 0.5F, e.pos.x);
   }
 
-  // Shake decays quickly and jitters every frame
-  shake_amount =
-      std::max(0.0F, shake_amount - (shake_amount * 8.0F * dt) - (10.0F * dt));
-  if (shake_amount > 0.0F) {
-    shake_offset = {asw::random::between(-shake_amount, shake_amount),
-                    asw::random::between(-shake_amount, shake_amount)};
-  } else {
-    shake_offset = {0.0F, 0.0F};
-  }
+  // Shake fades and jitters every frame
+  camera.update(dt);
 
   flash_time = std::max(0.0F, flash_time - dt);
 }
@@ -99,8 +100,7 @@ void Effects::clear() {
   particles.clear();
   texts.clear();
   pending.clear();
-  shake_amount = 0.0F;
-  shake_offset = {0.0F, 0.0F};
+  camera.snap_to(asw::Vec2f(SCREEN_W / 2.0F, SCREEN_H / 2.0F));
   flash_time = 0.0F;
 }
 
@@ -250,7 +250,7 @@ void Effects::float_text(const asw::Vec2f& pos,
 }
 
 void Effects::shake(float amount) {
-  shake_amount = std::min(30.0F, std::max(shake_amount, amount));
+  camera.shake(std::min(MAX_SHAKE, amount));
 }
 
 void Effects::flash(asw::Color color, float duration) {

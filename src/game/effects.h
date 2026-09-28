@@ -8,6 +8,8 @@
 // Particles, floating score text, screen shake and flashes
 class Effects {
  public:
+  Effects();
+
   void update(float dt);
 
   // Drawn inside the world canvas
@@ -49,7 +51,8 @@ class Effects {
   void shake(float amount);
   void flash(asw::Color color, float duration);
 
-  asw::Vec2f get_shake_offset() const { return shake_offset; }
+  // Fixed view that only moves to shake the world layer
+  const asw::Camera& get_camera() const { return camera; }
 
  private:
   struct Particle {
@@ -86,8 +89,7 @@ class Effects {
   std::vector<FloatText> texts;
   std::vector<PendingExplosion> pending;
 
-  float shake_amount{0.0F};
-  asw::Vec2f shake_offset;
+  asw::Camera camera;
 
   asw::Color flash_color;
   float flash_time{0.0F};
