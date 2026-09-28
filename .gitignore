@@ -32,7 +32,6 @@ $RECYCLE.BIN/
 # Icon must ends with two \r.
 Icon
 
-
 # Thumbnails
 ._*
 
@@ -40,13 +39,10 @@ Icon
 .Spotlight-V100
 .Trashes
 
-CppCheckResults.xml
-CMakeFiles
-CMakeCache.txt
-Makefile
-*.cmake
-install_manifest.txt
-bin
-docs
-lib
-build/Gunner*
+# Build
+/build
+
+# Tiled
+*.tiled-session
+# Python
+__pycache__/
