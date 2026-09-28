@@ -1,0 +1,22 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  release:
+    uses: adsgames/deploy-to-adsgames/.github/workflows/release-game.yml@v1
+    permissions:
+      id-token: write
+      contents: read
+    with:
+      project-id: gunner
+      # Pull requests only check that every platform builds
+      deploy: ${{ startsWith(github.ref, 'refs/tags/v') }}
+    secrets:
+      ADSGAMES_API_KEY: ${{ secrets.ADSGAMES_API_KEY }}
