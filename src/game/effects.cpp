@@ -9,18 +9,6 @@ namespace {
 
 constexpr size_t MAX_PARTICLES = 2500;
 
-asw::Color lerp_color(const asw::Color& a, const asw::Color& b, float t) {
-  auto mix = [t](uint8_t x, uint8_t y) {
-    return static_cast<uint8_t>(static_cast<float>(x) +
-                                ((static_cast<float>(y) - x) * t));
-  };
-  return {mix(a.r, b.r), mix(a.g, b.g), mix(a.b, b.b), mix(a.a, b.a)};
-}
-
-asw::Vec2f polar(float angle, float length) {
-  return {std::cos(angle) * length, std::sin(angle) * length};
-}
-
 }  // namespace
 
 void Effects::add(const Particle& particle) {
@@ -83,7 +71,7 @@ void Effects::draw_particles() const {
     // Square particles suit the chunky pixel look
     asw::draw::rect_fill(asw::Quad<float>(p.pos.x - (size / 2.0F),
                                           p.pos.y - (size / 2.0F), size, size),
-                         lerp_color(p.color_start, p.color_end, t));
+                         p.color_start.lerp(p.color_end, t));
   }
 }
 
@@ -122,8 +110,8 @@ void Effects::explosion(const asw::Vec2f& pos, float scale) {
     Particle p;
     p.pos = pos + asw::Vec2f(asw::random::between(-20.0F, 20.0F) * scale,
                              asw::random::between(-15.0F, 15.0F) * scale);
-    p.vel = polar(asw::random::between(0.0F, 2.0F * PI),
-                  asw::random::between(10.0F, 80.0F));
+    p.vel = asw::Vec2f::from_angle(asw::random::between(0.0F, 2.0F * PI),
+                                   asw::random::between(10.0F, 80.0F));
     p.max_life = p.life = asw::random::between(0.8F, 1.6F);
     p.size_start = asw::random::between(10.0F, 20.0F) * std::sqrt(scale);
     p.size_end = asw::random::between(26.0F, 40.0F) * std::sqrt(scale);
@@ -138,8 +126,8 @@ void Effects::explosion(const asw::Vec2f& pos, float scale) {
   for (int i = 0; i < static_cast<int>(12 * scale); i++) {
     Particle p;
     p.pos = pos;
-    p.vel = polar(asw::random::between(PI, 2.0F * PI),
-                  asw::random::between(150.0F, 450.0F));
+    p.vel = asw::Vec2f::from_angle(asw::random::between(PI, 2.0F * PI),
+                                   asw::random::between(150.0F, 450.0F));
     p.max_life = p.life = asw::random::between(0.8F, 1.6F);
     p.size_start = asw::random::between(3.0F, 7.0F);
     p.size_end = p.size_start;
@@ -153,8 +141,9 @@ void Effects::explosion(const asw::Vec2f& pos, float scale) {
   for (int i = 0; i < static_cast<int>(24 * scale); i++) {
     Particle p;
     p.pos = pos;
-    p.vel = polar(asw::random::between(0.0F, 2.0F * PI),
-                  asw::random::between(40.0F, 260.0F) * std::sqrt(scale));
+    p.vel = asw::Vec2f::from_angle(
+        asw::random::between(0.0F, 2.0F * PI),
+        asw::random::between(40.0F, 260.0F) * std::sqrt(scale));
     p.max_life = p.life = asw::random::between(0.3F, 0.7F);
     p.size_start = asw::random::between(12.0F, 24.0F) * std::sqrt(scale);
     p.size_end = 2.0F;
@@ -170,8 +159,8 @@ void Effects::explosion(const asw::Vec2f& pos, float scale) {
     Particle p;
     p.pos = pos + asw::Vec2f(asw::random::between(-10.0F, 10.0F) * scale,
                              asw::random::between(-10.0F, 10.0F) * scale);
-    p.vel = polar(asw::random::between(0.0F, 2.0F * PI),
-                  asw::random::between(10.0F, 60.0F));
+    p.vel = asw::Vec2f::from_angle(asw::random::between(0.0F, 2.0F * PI),
+                                   asw::random::between(10.0F, 60.0F));
     p.max_life = p.life = asw::random::between(0.12F, 0.25F);
     p.size_start = asw::random::between(30.0F, 50.0F) * scale;
     p.size_end = 10.0F * scale;
@@ -204,8 +193,9 @@ void Effects::sparks(const asw::Vec2f& pos,
   for (int i = 0; i < count; i++) {
     Particle p;
     p.pos = pos;
-    p.vel = polar(angle + asw::random::between(-spread, spread),
-                  asw::random::between(speed * 0.3F, speed));
+    p.vel =
+        asw::Vec2f::from_angle(angle + asw::random::between(-spread, spread),
+                               asw::random::between(speed * 0.3F, speed));
     p.max_life = p.life = asw::random::between(0.15F, 0.4F);
     p.size_start = asw::random::between(3.0F, 5.0F);
     p.size_end = 1.0F;
@@ -221,8 +211,8 @@ void Effects::muzzle_flash(const asw::Vec2f& pos, float angle) {
   for (int i = 0; i < 3; i++) {
     Particle p;
     p.pos = pos;
-    p.vel = polar(angle + asw::random::between(-0.3F, 0.3F),
-                  asw::random::between(100.0F, 300.0F));
+    p.vel = asw::Vec2f::from_angle(angle + asw::random::between(-0.3F, 0.3F),
+                                   asw::random::between(100.0F, 300.0F));
     p.max_life = p.life = 0.06F;
     p.size_start = asw::random::between(6.0F, 10.0F);
     p.size_end = 2.0F;

@@ -22,8 +22,6 @@ void Game::restart() {
 void Game::update(float dt) {
   using asw::input::get_action_down;
 
-  controls::update();
-
   dt = std::min(dt, MAX_DT);
   time += dt;
 
@@ -51,6 +49,7 @@ void Game::update(float dt) {
   if (get_action_down("pause")) {
     paused = !paused;
     audio::play("select");
+    world.get_player().pause_sounds(paused);
     if (paused) {
       asw::sound::pause_music();
     } else {
@@ -60,6 +59,7 @@ void Game::update(float dt) {
 
   if (paused) {
     if (get_action_down("quit")) {
+      world.get_player().stop_sounds();
       asw::sound::resume_music();
       manager.set_next_scene(ProgramState::Menu);
     }
@@ -100,7 +100,7 @@ void Game::draw() {
   } else if (player.is_alive() && !world.is_game_over() && !paused) {
     const float aim = player.get_aim();
     const auto target =
-        player.get_center() + asw::Vec2f(std::cos(aim), std::sin(aim)) * 160.0F;
+        player.get_center() + asw::Vec2f::from_angle(aim, 160.0F);
     asw::draw::sprite(asw::assets::get_texture("cursor"),
                       target - asw::Vec2f(20, 20));
   }
@@ -149,11 +149,11 @@ void Game::draw_game_over() const {
 
   if (game_over_time > 1.2F) {
     const bool pad = controls::using_pad();
-    gfx::text_shadow("font_m",
-                     pad ? "PRESS A TO PLAY AGAIN"
-                         : "CLICK OR ENTER TO PLAY AGAIN",
-                     asw::Vec2f(SCREEN_W / 2.0F, 520),
-                     asw::Color(255, 255, 255), asw::TextJustify::Center);
+    gfx::text_shadow(
+        "font_m",
+        pad ? "PRESS A TO PLAY AGAIN" : "CLICK OR ENTER TO PLAY AGAIN",
+        asw::Vec2f(SCREEN_W / 2.0F, 520), asw::Color(255, 255, 255),
+        asw::TextJustify::Center);
     gfx::text_shadow("font_m", pad ? "B FOR MENU" : "ESC FOR MENU",
                      asw::Vec2f(SCREEN_W / 2.0F, 555),
                      asw::Color(255, 255, 255), asw::TextJustify::Center);

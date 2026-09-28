@@ -43,6 +43,19 @@ constexpr std::array<float, PICKUP_TYPE_COUNT> POWER_DURATIONS = {
     6.0F,   // Laser
 };
 
+// Filled bar from a to b, for the beam and the gun barrel
+void draw_bar(const asw::Vec2f& a,
+              const asw::Vec2f& b,
+              float thickness,
+              asw::Color color) {
+  const auto mid = (a + b) * 0.5F;
+  const float length = a.distance(b);
+  asw::draw::rect_fill_rotate(
+      asw::Quad<float>(mid.x - (length / 2.0F), mid.y - (thickness / 2.0F),
+                       length, thickness),
+      (b - a).angle(), color);
+}
+
 }  // namespace
 
 void Player::reset() {
@@ -65,14 +78,13 @@ void Player::respawn() {
   hurt_timer = 0.0F;
   dash_timer = 0.0F;
   dash_cooldown = 0.0F;
-  laser_on = false;
+  set_laser(false);
   invuln_timer = RESPAWN_INVULN_TIME;
 }
 
 asw::Vec2f Player::get_gun_tip() const {
   const auto shoulder = get_center() + asw::Vec2f(0.0F, -2.0F);
-  return shoulder +
-         asw::Vec2f(std::cos(aim) * GUN_LENGTH, std::sin(aim) * GUN_LENGTH);
+  return shoulder + asw::Vec2f::from_angle(aim, GUN_LENGTH);
 }
 
 float Player::get_dash_ready() const {
@@ -91,7 +103,7 @@ void Player::update(float dt, World& world) {
   std::erase_if(ghosts, [](const Ghost& g) { return g.life <= 0.0F; });
 
   if (!alive) {
-    laser_on = false;
+    set_laser(false);
     return;
   }
 
@@ -112,7 +124,8 @@ void Player::update(float dt, World& world) {
   // Aim at the mouse, or along the right stick. With the stick released, aim
   // the way the player walks, or keep the last aim when standing still.
   if (controls::using_pad()) {
-    const auto stick = controls::aim_stick();
+    const auto stick = asw::input::get_controller_stick(
+        asw::input::ANY_CONTROLLER, asw::input::ControllerStick::Right);
     if (stick.x != 0.0F || stick.y != 0.0F) {
       aim = std::atan2(stick.y, stick.x);
     } else if (input != 0.0F) {
@@ -204,7 +217,7 @@ void Player::update(float dt, World& world) {
 
   // Shooting
   const bool trigger = get_action("fire");
-  laser_on = trigger && get_power_time(PickupType::Laser) > 0.0F;
+  set_laser(trigger && get_power_time(PickupType::Laser) > 0.0F);
 
   if (laser_on) {
     update_laser(dt, world);
@@ -232,7 +245,7 @@ void Player::fire(World& world) {
 
     Bullet b;
     b.pos = tip;
-    b.vel = {std::cos(angle) * BULLET_SPEED, std::sin(angle) * BULLET_SPEED};
+    b.vel = asw::Vec2f::from_angle(angle, BULLET_SPEED);
     b.radius = 3.0F;
     b.damage = BULLET_DAMAGE;
     b.from_player = true;
@@ -247,20 +260,43 @@ void Player::fire(World& world) {
 
 void Player::update_laser(float dt, World& world) {
   const auto tip = get_gun_tip();
-  const asw::Vec2f dir(std::cos(aim), std::sin(aim));
+  const auto dir = asw::Vec2f::from_angle(aim);
   world.laser_sweep(tip, dir, LASER_LENGTH, LASER_DPS * dt);
 
-  laser_sound_timer -= dt;
-  if (laser_sound_timer <= 0.0F) {
-    laser_sound_timer = 0.25F;
-    audio::play("laser", 0.4F, tip.x);
+  // Restart the hum if a louder sound took its voice
+  if (!laser_sound.is_playing()) {
+    laser_sound = audio::loop("laser_loop", 0.3F, tip.x);
   }
+  laser_sound.set_pan(audio::pan_at(tip.x));
 
   if (asw::random::chance(0.5F)) {
     world.get_effects().sparks(tip, asw::Color(255, 120, 255), 1, aim, 0.4F,
                                250.0F);
   }
   world.get_effects().shake(1.5F);
+}
+
+void Player::set_laser(bool on) {
+  if (on && !laser_on) {
+    const auto tip = get_gun_tip();
+    audio::play("laser", 0.4F, tip.x);
+    laser_sound = audio::loop("laser_loop", 0.3F, tip.x);
+  } else if (!on && laser_on) {
+    laser_sound.stop(0.08F);
+  }
+  laser_on = on;
+}
+
+void Player::pause_sounds(bool paused) {
+  if (paused) {
+    laser_sound.pause();
+  } else {
+    laser_sound.resume();
+  }
+}
+
+void Player::stop_sounds() {
+  set_laser(false);
 }
 
 bool Player::hurt(float damage, World& world, const asw::Vec2f& from) {
@@ -287,7 +323,7 @@ bool Player::hurt(float damage, World& world, const asw::Vec2f& from) {
   if (health <= 0.0F) {
     health = 0.0F;
     alive = false;
-    laser_on = false;
+    set_laser(false);
     world.on_player_death();
   } else {
     world.on_player_damaged();
@@ -316,8 +352,9 @@ void Player::draw() const {
   for (const auto& g : ghosts) {
     asw::draw::set_alpha(player_tex, g.life * 1.6F);
     asw::draw::set_tint(player_tex, asw::Color(120, 220, 255));
-    gfx::sprite_ex(player_tex, asw::Quad<float>(g.pos, {WIDTH, HEIGHT}), 0.0F,
-                   g.facing_left);
+    asw::draw::stretch_sprite_rotate(player_tex,
+                                     asw::Quad<float>(g.pos, {WIDTH, HEIGHT}),
+                                     0.0F, g.facing_left);
   }
   asw::draw::set_alpha(player_tex, 1.0F);
   asw::draw::set_tint(player_tex, asw::Color(255, 255, 255));
@@ -335,7 +372,7 @@ void Player::draw() const {
   // Laser beam behind the player
   if (laser_on) {
     const auto tip = get_gun_tip();
-    const asw::Vec2f dir(std::cos(aim), std::sin(aim));
+    const auto dir = asw::Vec2f::from_angle(aim);
     const asw::Vec2f normal(-dir.y, dir.x);
     const auto end = tip + (dir * LASER_LENGTH);
     const float wobble = asw::random::between(0.0F, 2.0F);
@@ -343,34 +380,27 @@ void Player::draw() const {
     // The beam texture has the beam on its left half, so rotating it half a
     // turn past the aim points the beam from the gun outwards
     const auto beam = asw::assets::get_texture("laserbeam");
-    gfx::sprite_ex(
+    asw::draw::stretch_sprite_rotate(
         beam, asw::Quad<float>(tip.x - 800.0F, tip.y - 20.0F, 1600.0F, 40.0F),
         aim + PI, false);
 
-    for (int i = -4; i <= 4; i++) {
-      const auto offset = normal * (static_cast<float>(i) + wobble - 1.0F);
-      const auto color = std::abs(i) <= 1   ? asw::Color(255, 255, 255)
-                         : std::abs(i) <= 2 ? asw::Color(255, 150, 255)
-                                            : asw::Color(200, 40, 200, 160);
-      asw::draw::line(tip + offset, end + offset, color);
-    }
+    // Soft purple edge, pink body and a white hot core
+    const auto offset = normal * (wobble - 1.0F);
+    draw_bar(tip + offset, end + offset, 9.0F, asw::Color(200, 40, 200, 160));
+    draw_bar(tip + offset, end + offset, 5.0F, asw::Color(255, 150, 255));
+    draw_bar(tip + offset, end + offset, 3.0F, asw::Color(255, 255, 255));
     asw::draw::circle_fill(tip, 7.0F + wobble, asw::Color(255, 200, 255));
   }
 
   // Sprite faces right
   const auto tex =
       hurt_timer > 0.0F ? asw::assets::get_texture("player_hurt") : player_tex;
-  gfx::sprite_ex(tex, asw::Quad<float>(pos, {WIDTH, HEIGHT}), 0.0F,
-                 facing_left);
+  asw::draw::stretch_sprite_rotate(tex, asw::Quad<float>(pos, {WIDTH, HEIGHT}),
+                                   0.0F, facing_left);
 
   // Gun barrel
   const auto shoulder = get_center() + asw::Vec2f(0.0F, -2.0F);
   const auto tip = get_gun_tip();
-  const asw::Vec2f normal(-std::sin(aim), std::cos(aim));
-  for (int i = -2; i <= 2; i++) {
-    const auto offset = normal * static_cast<float>(i);
-    asw::draw::line(
-        shoulder + offset, tip + offset,
-        std::abs(i) == 2 ? asw::Color(20, 20, 20) : asw::Color(70, 70, 80));
-  }
+  draw_bar(shoulder, tip, 5.0F, asw::Color(20, 20, 20));
+  draw_bar(shoulder, tip, 3.0F, asw::Color(70, 70, 80));
 }

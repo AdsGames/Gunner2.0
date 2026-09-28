@@ -28,6 +28,10 @@ class Player {
   // Respawn after losing a life
   void respawn();
 
+  // Hold or silence the looping laser sound, for pausing and leaving the game
+  void pause_sounds(bool paused);
+  void stop_sounds();
+
   asw::Vec2f get_center() const {
     return {pos.x + (WIDTH / 2.0F), pos.y + (HEIGHT / 2.0F)};
   }
@@ -55,6 +59,7 @@ class Player {
   bool dashing() const { return dash_timer > 0.0F; }
   void fire(World& world);
   void update_laser(float dt, World& world);
+  void set_laser(bool on);
 
   asw::Vec2f pos;
   asw::Vec2f vel;
@@ -73,8 +78,8 @@ class Player {
   float dash_timer{0.0F};
   float dash_cooldown{0.0F};
   float dash_dir{1.0F};
-  float laser_sound_timer{0.0F};
   bool laser_on{false};
+  asw::sound::SoundHandle laser_sound;
 
   // Afterimages left behind while dashing
   struct Ghost {

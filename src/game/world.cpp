@@ -25,20 +25,9 @@ std::string with_commas(int value) {
   return digits;
 }
 
-// Shortest distance from point p to segment a-b
-float distance_to_segment(const asw::Vec2f& p,
-                          const asw::Vec2f& a,
-                          const asw::Vec2f& b) {
-  const auto ab = b - a;
-  const float len_sq = ab.dot(ab);
-  const float t =
-      len_sq > 0.0F ? std::clamp((p - a).dot(ab) / len_sq, 0.0F, 1.0F) : 0.0F;
-  return p.distance(a + (ab * t));
-}
-
-asw::Quad<float> bullet_box(const Bullet& b) {
-  return {b.pos.x - b.radius, b.pos.y - b.radius, b.radius * 2.0F,
-          b.radius * 2.0F};
+// Round bullet against a rectangle
+bool bullet_hits(const Bullet& b, const asw::Quad<float>& box) {
+  return box.distance_to(b.pos) < b.radius;
 }
 
 void draw_bar(const asw::Quad<float>& area,
@@ -255,10 +244,8 @@ void World::update_collisions() {
       continue;
     }
 
-    const auto box = bullet_box(b);
-
     if (!b.from_player) {
-      if (player.is_alive() && box.collides(player_box)) {
+      if (player.is_alive() && bullet_hits(b, player_box)) {
         if (player.hurt(b.damage, *this, b.pos)) {
           b.alive = false;
         }
@@ -267,7 +254,7 @@ void World::update_collisions() {
     }
 
     for (auto& heli : helicopters) {
-      if (!heli.is_alive() || !box.collides(heli.get_hitbox())) {
+      if (!heli.is_alive() || !bullet_hits(b, heli.get_hitbox())) {
         continue;
       }
       b.alive = false;
@@ -286,7 +273,7 @@ void World::update_collisions() {
     }
 
     for (auto& m : mines) {
-      if (m.alive && box.collides(m.get_bounds())) {
+      if (m.alive && bullet_hits(b, m.get_bounds())) {
         b.alive = false;
         explode_mine(m, true);
         break;
@@ -324,7 +311,7 @@ void World::laser_sweep(const asw::Vec2f& origin,
       continue;
     }
     const float reach = heli.get_size().y * 0.35F;
-    if (distance_to_segment(heli.get_center(), origin, end) < reach) {
+    if (heli.get_center().distance_to_segment(origin, end) < reach) {
       if (asw::random::chance(0.3F)) {
         effects.sparks(heli.get_center(), asw::Color(255, 150, 255), 3,
                        std::atan2(-dir.y, -dir.x), 1.0F, 250.0F);
@@ -338,7 +325,7 @@ void World::laser_sweep(const asw::Vec2f& origin,
   // The beam also burns enemy bullets out of the air
   for (auto& b : bullets) {
     if (b.alive && !b.from_player &&
-        distance_to_segment(b.pos, origin, end) < b.radius + 6.0F) {
+        b.pos.distance_to_segment(origin, end) < b.radius + 6.0F) {
       b.alive = false;
       effects.sparks(b.pos, asw::Color(255, 120, 120), 4, 0.0F, PI, 150.0F);
       add_score(5);
@@ -346,7 +333,7 @@ void World::laser_sweep(const asw::Vec2f& origin,
   }
 
   for (auto& m : mines) {
-    if (m.alive && distance_to_segment(m.get_center(), origin, end) < 14.0F) {
+    if (m.alive && m.get_center().distance_to_segment(origin, end) < 14.0F) {
       explode_mine(m, true);
     }
   }

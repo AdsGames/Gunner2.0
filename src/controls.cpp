@@ -1,9 +1,8 @@
 #include "./controls.h"
 
-#include <cmath>
-
 namespace {
 
+using asw::input::ANY_CONTROLLER;
 using asw::input::ControllerAxis;
 using asw::input::ControllerAxisBinding;
 using asw::input::ControllerButton;
@@ -13,28 +12,21 @@ using asw::input::KeyBinding;
 using asw::input::MouseButton;
 using asw::input::MouseButtonBinding;
 
-// asw bindings target one controller index, so bind the first few
-constexpr uint32_t MAX_PADS = 4;
-
-constexpr float STICK_DEAD_ZONE = 0.25F;
+// Axes already have asw's dead zone applied, so a small push moves the player
+constexpr float STICK_THRESHOLD = 0.05F;
 constexpr float TRIGGER_THRESHOLD = 0.3F;
 
-bool pad_active = false;
-
 void bind_button(const char* action, ControllerButton button) {
-  for (uint32_t i = 0; i < MAX_PADS; i++) {
-    asw::input::bind_action(action, ControllerButtonBinding{button, i});
-  }
+  asw::input::bind_action(action,
+                          ControllerButtonBinding{button, ANY_CONTROLLER});
 }
 
 void bind_axis(const char* action,
                ControllerAxis axis,
                float threshold,
                bool positive) {
-  for (uint32_t i = 0; i < MAX_PADS; i++) {
-    asw::input::bind_action(
-        action, ControllerAxisBinding{axis, i, threshold, positive});
-  }
+  asw::input::bind_action(
+      action, ControllerAxisBinding{axis, ANY_CONTROLLER, threshold, positive});
 }
 
 void bind_key(const char* action, Key key) {
@@ -43,25 +35,6 @@ void bind_key(const char* action, Key key) {
 
 void bind_mouse(const char* action, MouseButton button) {
   asw::input::bind_action(action, MouseButtonBinding{button});
-}
-
-bool any_pad_input() {
-  const auto count = static_cast<uint32_t>(asw::input::get_controller_count());
-  for (uint32_t i = 0; i < count; i++) {
-    for (int b = 0; b < asw::input::NUM_CONTROLLER_BUTTONS; b++) {
-      if (asw::input::get_controller_button(
-              i, static_cast<ControllerButton>(b))) {
-        return true;
-      }
-    }
-    for (int a = 0; a < asw::input::NUM_CONTROLLER_AXES; a++) {
-      if (std::abs(asw::input::get_controller_axis(
-              i, static_cast<ControllerAxis>(a))) > 0.5F) {
-        return true;
-      }
-    }
-  }
-  return false;
 }
 
 }  // namespace
@@ -73,12 +46,12 @@ void controls::bind() {
   bind_key("left", Key::A);
   bind_key("left", Key::Left);
   bind_button("left", ControllerButton::DPadLeft);
-  bind_axis("left", ControllerAxis::LeftX, STICK_DEAD_ZONE, false);
+  bind_axis("left", ControllerAxis::LeftX, STICK_THRESHOLD, false);
 
   bind_key("right", Key::D);
   bind_key("right", Key::Right);
   bind_button("right", ControllerButton::DPadRight);
-  bind_axis("right", ControllerAxis::LeftX, STICK_DEAD_ZONE, true);
+  bind_axis("right", ControllerAxis::LeftX, STICK_THRESHOLD, true);
 
   bind_key("jump", Key::W);
   bind_key("jump", Key::Space);
@@ -113,31 +86,4 @@ void controls::bind() {
 
   bind_key("quit", Key::Q);
   bind_button("quit", ControllerButton::Back);
-}
-
-void controls::update() {
-  const auto& mouse = asw::input::get_mouse();
-  if (mouse.any_pressed || mouse.change.x != 0.0F || mouse.change.y != 0.0F ||
-      asw::input::get_keyboard().any_pressed) {
-    pad_active = false;
-  } else if (any_pad_input()) {
-    pad_active = true;
-  }
-}
-
-bool controls::using_pad() {
-  return pad_active;
-}
-
-asw::Vec2f controls::aim_stick() {
-  const auto count = static_cast<uint32_t>(asw::input::get_controller_count());
-  for (uint32_t i = 0; i < count; i++) {
-    const asw::Vec2f stick(
-        asw::input::get_controller_axis(i, ControllerAxis::RightX),
-        asw::input::get_controller_axis(i, ControllerAxis::RightY));
-    if (std::hypot(stick.x, stick.y) > STICK_DEAD_ZONE) {
-      return stick;
-    }
-  }
-  return {0.0F, 0.0F};
 }

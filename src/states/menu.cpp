@@ -31,8 +31,6 @@ void Menu::add_flyby() {
 }
 
 void Menu::update(float dt) {
-  controls::update();
-
   dt = std::min(dt, MAX_DT);
   time += dt;
   background.update(dt);
@@ -69,10 +67,11 @@ void Menu::draw() {
     const asw::Vec2f size(200.0F * f.scale, 62.0F * f.scale);
     const float bob = std::sin((time * 2.0F) + f.pos.x * 0.01F) * 6.0F;
     asw::draw::set_tint(heli, f.tint);
-    gfx::sprite_ex(heli,
-                   asw::Quad<float>(f.pos.x - (size.x / 2.0F), f.pos.y + bob,
-                                    size.x, size.y),
-                   f.speed > 0 ? 0.1F : -0.1F, f.speed > 0);
+    asw::draw::stretch_sprite_rotate(
+        heli,
+        asw::Quad<float>(f.pos.x - (size.x / 2.0F), f.pos.y + bob, size.x,
+                         size.y),
+        f.speed > 0 ? 0.1F : -0.1F, f.speed > 0);
   }
   asw::draw::set_tint(heli, asw::Color(255, 255, 255));
 

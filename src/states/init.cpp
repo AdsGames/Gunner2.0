@@ -18,10 +18,11 @@ void Init::init() {
     asw::assets::load_texture("assets/images/" + name + ".png", name);
   }
 
-  const std::array<std::string, 15> samples = {
-      "shoot",         "enemy_shoot", "laser", "hit",      "explosion",
-      "big_explosion", "pickup",      "jump",  "hurt",     "select",
-      "combo",         "wave",        "boss",  "gameover", "mine",
+  const std::array<std::string, 16> samples = {
+      "shoot",     "enemy_shoot",   "laser",  "hit",
+      "explosion", "big_explosion", "pickup", "jump",
+      "hurt",      "select",        "combo",  "wave",
+      "boss",      "gameover",      "mine",   "laser_loop",
   };
   for (const auto& name : samples) {
     asw::assets::load_sample("assets/sounds/" + name + ".wav", name);
@@ -45,7 +46,7 @@ void Init::init() {
   controls::bind();
 
   // The game draws its own crosshair
-  SDL_HideCursor();
+  asw::input::set_cursor_visible(false);
 
   asw::sound::play_music(asw::assets::get_music("music"), 0.5F);
 }

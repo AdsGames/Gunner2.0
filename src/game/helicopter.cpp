@@ -262,7 +262,7 @@ void Helicopter::update_boss_attacks(float dt, World& world) {
         const float angle = spiral_angle + (static_cast<float>(i) * PI);
         Bullet b;
         b.pos = pos;
-        b.vel = {std::cos(angle) * 260.0F, std::sin(angle) * 260.0F};
+        b.vel = asw::Vec2f::from_angle(angle, 260.0F);
         b.radius = 5.0F;
         b.damage = 8.0F;
         b.from_player = false;
@@ -289,7 +289,7 @@ void Helicopter::fire_aimed(World& world,
     const float angle = base + offset;
     Bullet b;
     b.pos = gun;
-    b.vel = {std::cos(angle) * bullet_speed, std::sin(angle) * bullet_speed};
+    b.vel = asw::Vec2f::from_angle(angle, bullet_speed);
     b.radius = 5.0F;
     b.damage = 10.0F;
     b.from_player = false;
@@ -309,7 +309,7 @@ void Helicopter::fire_ring(World& world,
                                   static_cast<float>(count));
     Bullet b;
     b.pos = pos;
-    b.vel = {std::cos(angle) * bullet_speed, std::sin(angle) * bullet_speed};
+    b.vel = asw::Vec2f::from_angle(angle, bullet_speed);
     b.radius = 6.0F;
     b.damage = 10.0F;
     b.from_player = false;
@@ -326,8 +326,8 @@ void Helicopter::draw() const {
   const bool flip = dir > 0;
 
   if (hurt_timer > 0.0F) {
-    gfx::sprite_ex(asw::assets::get_texture("helicopter_hurt"), dest, tilt,
-                   flip);
+    asw::draw::stretch_sprite_rotate(
+        asw::assets::get_texture("helicopter_hurt"), dest, tilt, flip);
   } else {
     const auto tex = asw::assets::get_texture("helicopter");
     auto color = tint;
@@ -340,7 +340,7 @@ void Helicopter::draw() const {
     }
 
     asw::draw::set_tint(tex, color);
-    gfx::sprite_ex(tex, dest, tilt, flip);
+    asw::draw::stretch_sprite_rotate(tex, dest, tilt, flip);
     asw::draw::set_tint(tex, asw::Color(255, 255, 255));
   }
 

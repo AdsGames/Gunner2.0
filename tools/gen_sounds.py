@@ -56,6 +56,28 @@ def tone(duration, f0, f1=None, wave_fn=square, vol=0.5, attack=0.005,
     return out
 
 
+def hum(duration, freq, wave_fn=square, vol=0.5, duty=0.5, wobble=0.0):
+    """Steady tone with no envelope that loops without a click.
+
+    Keep duration * freq and duration * wobble whole numbers so every cycle
+    ends where the loop starts again.
+    """
+    n = int(duration * RATE)
+    out = []
+    phase = 0.0
+    for i in range(n):
+        f = freq
+        if wobble:
+            f *= 1.0 + 0.03 * math.sin(i / RATE * wobble * 2 * math.pi)
+        phase += f / RATE
+        if wave_fn is square:
+            s = square(phase, duty)
+        else:
+            s = wave_fn(phase)
+        out.append(s * vol)
+    return out
+
+
 def crushed_noise(duration, vol=0.6, hold_start=1, hold_end=12, curve=1.5):
     """Sample-and-hold noise; a growing hold lowers the pitch over time."""
     n = int(duration * RATE)
@@ -150,6 +172,10 @@ def sfx():
         tone(0.9, note_freq(-5), note_freq(-7), square, 0.25, curve=1.0,
              vibrato=5)))
     write("mine.wav", tone(0.1, 200, 200, square, 0.15, duty=0.125))
+    # Held laser, looped while the beam is on
+    write("laser_loop.wav", mix(hum(1.0, 170, saw, 0.22, wobble=6),
+                                hum(1.0, 1000, square, 0.06, duty=0.125,
+                                    wobble=6)))
 
 
 def music():
