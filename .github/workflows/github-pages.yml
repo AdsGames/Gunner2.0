@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   pages:
-    uses: adsgames/deploy-to-adsgames/.github/workflows/deploy-github-pages.yml@v1
+    uses: adsgames/deploy-to-adsgames/.github/workflows/deploy-asw-pages.yml@v1
     permissions:
       contents: read
       pages: write
