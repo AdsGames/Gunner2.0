@@ -279,7 +279,7 @@ void Helicopter::fire_aimed(World& world,
                             float bullet_speed) {
   const auto gun = gun_position();
   const auto target = world.get_player().get_center();
-  const float base = std::atan2(target.y - gun.y, target.x - gun.x) +
+  const float base = (target - gun).angle() +
                      asw::random::between(-0.05F, 0.05F);
 
   for (int i = 0; i < count; i++) {

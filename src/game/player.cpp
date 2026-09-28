@@ -127,7 +127,7 @@ void Player::update(float dt, World& world) {
     const auto stick = asw::input::get_controller_stick(
         asw::input::ANY_CONTROLLER, asw::input::ControllerStick::Right);
     if (stick.x != 0.0F || stick.y != 0.0F) {
-      aim = std::atan2(stick.y, stick.x);
+      aim = stick.angle();
     } else if (input != 0.0F) {
       aim = input < 0.0F ? PI : 0.0F;
     }
@@ -135,7 +135,7 @@ void Player::update(float dt, World& world) {
   } else {
     const auto mouse = asw::input::get_mouse().position;
     const auto shoulder = get_center() + asw::Vec2f(0.0F, -2.0F);
-    aim = std::atan2(mouse.y - shoulder.y, mouse.x - shoulder.x);
+    aim = (mouse - shoulder).angle();
     facing_left = mouse.x < shoulder.x;
   }
 
