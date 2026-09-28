@@ -43,6 +43,14 @@ constexpr std::array<float, PICKUP_TYPE_COUNT> POWER_DURATIONS = {
     6.0F,   // Laser
 };
 
+// Pan for the laser hum as the gun moves. asw::sound::play_at pans once, when
+// the sound starts, so the playing loop uses the same curve here. The gun is
+// always on screen, so there is no edge fade to match.
+float laser_pan(float x) {
+  const float center = SCREEN_W / 2.0F;
+  return std::clamp(((x - center) / center) * 0.7F, -1.0F, 1.0F);
+}
+
 // Filled bar from a to b, for the beam and the gun barrel
 void draw_bar(const asw::Vec2f& a,
               const asw::Vec2f& b,
@@ -267,7 +275,7 @@ void Player::update_laser(float dt, World& world) {
   if (!laser_sound.is_playing()) {
     laser_sound = audio::loop("laser_loop", 0.3F, tip.x);
   }
-  laser_sound.set_pan(audio::pan_at(tip.x));
+  laser_sound.set_pan(laser_pan(tip.x));
 
   if (asw::random::chance(0.5F)) {
     world.get_effects().sparks(tip, asw::Color(255, 120, 255), 1, aim, 0.4F,
