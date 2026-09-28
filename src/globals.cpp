@@ -55,21 +55,14 @@ SoundStyle style_for(std::string_view key) {
 
 }  // namespace
 
-float audio::pan_at(float x) {
-  // Same curve as asw::sound::play_at
-  const float center = SCREEN_W / 2.0F;
-  return std::clamp(((x - center) / center) * 0.7F, -1.0F, 1.0F);
-}
-
 void audio::play(const std::string& key, float volume, float x) {
   const auto style = style_for(key);
 
   asw::sound::PlayOptions options;
   options.volume = volume;
-  options.pan = pan_at(x);
   options.pitch_variation = style.pitch_variation;
   options.priority = style.priority;
-  asw::sound::play(asw::assets::get_sample(key), options);
+  asw::sound::play_at(asw::assets::get_sample(key), x, options);
 
   if (style.duck_gain < 1.0F) {
     asw::sound::duck(asw::sound::Bus::Music, style.duck_gain, style.duck_hold);
@@ -81,11 +74,10 @@ asw::sound::SoundHandle audio::loop(const std::string& key,
                                     float x) {
   asw::sound::PlayOptions options;
   options.volume = volume;
-  options.pan = pan_at(x);
   options.loop = true;
   options.priority = 1;
   options.fade_in_s = 0.05F;
-  return asw::sound::play(asw::assets::get_sample(key), options);
+  return asw::sound::play_at(asw::assets::get_sample(key), x, options);
 }
 
 namespace {

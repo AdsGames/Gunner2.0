@@ -77,10 +77,11 @@ void Game::draw() {
   asw::display::reset_render_target();
 
   // Canvas to the screen with shake
-  const auto shake = world.get_effects().get_shake_offset();
+  const auto& camera = world.get_effects().get_camera();
   asw::draw::clear_color(asw::Color(0, 0, 0));
   asw::draw::stretch_sprite(
-      canvas, asw::Quad<float>(shake.x, shake.y, SCREEN_W, SCREEN_H));
+      canvas,
+      camera.world_to_screen(asw::Quad<float>(0, 0, SCREEN_W, SCREEN_H)));
 
   world.draw_hud();
   world.get_effects().draw_flash();

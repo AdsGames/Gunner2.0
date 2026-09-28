@@ -32,8 +32,9 @@ void text_shadow(const std::string& font_key,
 
 namespace audio {
 
-// Play a cached sample, panned by screen x position. Each sample has its own
-// pitch variation, priority and music ducking, set in globals.cpp.
+// Play a cached sample, panned by screen x position. Sounds past the screen
+// edge fade out. Each sample has its own pitch variation, priority and music
+// ducking, set in globals.cpp.
 void play(const std::string& key,
           float volume = 1.0F,
           float x = SCREEN_W / 2.0F);
@@ -42,9 +43,6 @@ void play(const std::string& key,
 asw::sound::SoundHandle loop(const std::string& key,
                              float volume = 1.0F,
                              float x = SCREEN_W / 2.0F);
-
-// Pan for a screen x position
-float pan_at(float x);
 
 }  // namespace audio
 

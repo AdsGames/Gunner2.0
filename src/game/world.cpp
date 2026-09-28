@@ -259,7 +259,7 @@ void World::update_collisions() {
       }
       b.alive = false;
       effects.sparks(b.pos, asw::Color(255, 230, 120), 5,
-                     std::atan2(-b.vel.y, -b.vel.x), 0.8F, 250.0F);
+                     b.vel.angle() + PI, 0.8F, 250.0F);
       audio::play("hit", 0.3F, b.pos.x);
       add_score(5);
       if (heli.damage(b.damage)) {
@@ -314,7 +314,7 @@ void World::laser_sweep(const asw::Vec2f& origin,
     if (heli.get_center().distance_to_segment(origin, end) < reach) {
       if (asw::random::chance(0.3F)) {
         effects.sparks(heli.get_center(), asw::Color(255, 150, 255), 3,
-                       std::atan2(-dir.y, -dir.x), 1.0F, 250.0F);
+                       dir.angle() + PI, 1.0F, 250.0F);
       }
       if (heli.damage(damage)) {
         kill_helicopter(heli);

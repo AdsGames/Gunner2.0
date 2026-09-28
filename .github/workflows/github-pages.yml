@@ -1,0 +1,26 @@
+name: Deploy GitHub Pages
+
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - v*
+  pull_request:
+    branches:
+      - master
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  pages:
+    uses: adsgames/deploy-to-adsgames/.github/workflows/deploy-asw-pages.yml@v1
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    with:
+      # Pull requests only check that the web build works
+      deploy: ${{ github.event_name == 'push' }}
